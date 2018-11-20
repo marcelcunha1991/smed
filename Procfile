@@ -1,0 +1,1 @@
+web: gunicorn smedserver.wsgi --log-file -
