@@ -30,7 +30,7 @@ router.register(r'user', UserViewSet)
 router.register(r'maquinas', MaquinasViewSet)
 router.register(r'processo', ProcessoViewSet)
 router.register(r'setup', SetupViewSet)
-router.register(r'procesimento', ProcedimentoViewSet)
+router.register(r'procedimento', ProcedimentoViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),
