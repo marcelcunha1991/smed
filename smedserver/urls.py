@@ -20,11 +20,17 @@ from django.conf.urls.static import static
 from django.urls import path
 from rest_framework import routers
 
-from core import  views as urls_core
+from core import views as urls_core
 from accounts.api.viewsets import UserViewSet
+from maquinas.api.viewsets import MaquinasViewSet
+from setup.api.viewsets import ProcessoViewSet, SetupViewSet, ProcedimentoViewSet
 
 router = routers.DefaultRouter()
 router.register(r'user', UserViewSet)
+router.register(r'maquinas', MaquinasViewSet)
+router.register(r'processo', ProcessoViewSet)
+router.register(r'setup', SetupViewSet)
+router.register(r'procesimento', ProcedimentoViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),

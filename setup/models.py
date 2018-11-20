@@ -1,24 +1,23 @@
 from django.conf import settings
 from django.db import models
 
-from accounts.models import Cargo
+from accounts.models import Cargo, User
 from maquinas.models import Maquinas
 
 
-# TODO colocar os campos codigo descricao como obrigatórios depois.
+# TODO colocar os campos CODIGO, DESCRICAO, STATUS como obrigatórios depois.
 class Processo(models.Model):
     codigo = models.CharField(max_length=100, blank=True, null=True)
     descricao = models.CharField(max_length=100, blank=True, null=True)
-    gerente = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Gerente', on_delete=models.CASCADE)
+    gerente = models.ForeignKey(User, verbose_name='Gerente', on_delete=models.CASCADE)
     maquina = models.ForeignKey(Maquinas, on_delete=models.CASCADE, blank=True, null=True)
-    status = models.CharField(max_length=20)
+    status = models.CharField(max_length=20, default='Ativo', blank=True, null=True)
 
     def __str__(self):
         return self.descricao
 
 
 class Setup(models.Model):
-
     TIPO_CHOICES = (
         (0, 'Outro'),
         (1, 'Externo'),
@@ -50,5 +49,5 @@ class Procedimento(models.Model):
     status = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
-        return self.setup
-
+        return self.setup.descricao
+        # return str(self.id)
