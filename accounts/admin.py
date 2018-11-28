@@ -22,7 +22,7 @@ class UserAdmin(BaseUserAdmin):
         }),
         ('Permissões', {
             'fields': (
-                'is_active', 'is_staff', 'is_superuser', 'groups',
+                'is_active', 'is_staff', 'is_superuser', 'is_logged', 'groups',
                 'user_permissions'
             )
         }

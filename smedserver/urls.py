@@ -20,20 +20,28 @@ from django.conf.urls.static import static
 from django.urls import path
 from rest_framework import routers
 
-from core import views as urls_core
-from accounts.api.viewsets import UserViewSet
-from maquinas.api.viewsets import MaquinasViewSet
-from setup.api.viewsets import ProcessoViewSet, SetupViewSet, ProcedimentoViewSet
+from accounts.viewsets import UserViewSet, LoginViewSet, LogoutViewSet, index
+from maquinas.viewsets import MaquinasViewSet
+from setup.viewsets import OrdemProcessoViewSet, EtapaProcessoViewSet, SetupViewSet, ProcedimentoViewSet
 
 router = routers.DefaultRouter()
 router.register(r'user', UserViewSet)
 router.register(r'maquinas', MaquinasViewSet)
-router.register(r'processo', ProcessoViewSet)
+router.register(r'ordem-processo', OrdemProcessoViewSet)
+router.register(r'etapa-processo', EtapaProcessoViewSet)
 router.register(r'setup', SetupViewSet)
-router.register(r'procedimento', ProcedimentoViewSet)
+router.register(r'procedimento', ProcedimentoViewSet, base_name='Procedimento')
 
 urlpatterns = [
     path('api/', include(router.urls)),
-    path('', urls_core.index),
+    path('user/login/', LoginViewSet.as_view()),
+    path('user/logout/', LogoutViewSet.as_view()),
+    path('', index),
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns

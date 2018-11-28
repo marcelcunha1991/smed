@@ -31,11 +31,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         ], help_text='Um nome curto que será usado para identificá-lo de forma única na plataforma'
     )
     name = models.CharField('Nome', max_length=100, blank=True)
-    email = models.EmailField('E-mail', unique=True, null=True, blank=True)
+    email = models.EmailField('E-mail', null=True, blank=True)
     cargo = models.ForeignKey(Cargo, on_delete=models.PROTECT, blank=True, null=True)
     phone = models.CharField('Telefone', max_length=30, null=True, blank=True)
     is_staff = models.BooleanField('Equipe', default=False)
     is_active = models.BooleanField('Ativo', default=True)
+    is_logged = models.BooleanField('Logado', default=False)
     date_joined = models.DateTimeField('Data de Entrada', auto_now_add=True)
 
     USERNAME_FIELD = 'username'
@@ -48,11 +49,18 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = 'Usuários'
 
     def __str__(self):
-        # return self.name or self.username
-        return '%s - %s' % (self.username or self.name, self.cargo)
+        return self.name or self.username
+        # return '%s - %s' % (self.username or self.name, self.cargo)
 
     def get_full_name(self):
         return str(self)
 
     def get_short_name(self):
         return str(self).split(" ")[0]
+
+    @property
+    def status_message(self):
+        if self.is_logged:
+            return "Usuário Logado"
+        else:
+            return "Usuário deslogado"
