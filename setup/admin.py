@@ -7,7 +7,7 @@ class OrdemProcessoAdmin(admin.ModelAdmin):
 
 
 class EtapaProcessoAdmin(admin.ModelAdmin):
-    list_display = ['id', 'op', 'etapa', 'maquina', 'descricao', 'gerente', 'status', 'codigo']
+    list_display = ['id', 'descricao', 'etapa', 'op', 'maquina', 'gerente', 'status']
     list_filter = ('op',)
 
 
