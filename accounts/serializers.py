@@ -10,10 +10,8 @@ class CargoSerializer(ModelSerializer):
 
 
 class UserSerializer(ModelSerializer):
-    # cargo = CargoSerializer()
+    cargo = CargoSerializer()
 
     class Meta:
         model = User
         fields = ('id', 'username', 'name', 'email', 'cargo', 'is_logged')
-
-
