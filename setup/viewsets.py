@@ -123,3 +123,16 @@ class ProcedimentoViewSet(ModelViewSet):
         procedimento.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=['POST'], detail=True)
+    def finalizar_com_justificativa(self, request, pk):
+        procedimento = self.get_object()
+        procedimento.tempo_realizado = request.data.get('tempo_realizado', procedimento.tempo_realizado)
+        procedimento.observacao = request.data.get('observacao', procedimento.observacao)
+
+        procedimento.status = 5
+        procedimento.save()
+
+        serializer = ProcedimentoDetailsSerializer(procedimento)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
