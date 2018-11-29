@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 
+from accounts.models import User
 from setup.models import EtapaProcesso, Setup, Procedimento, OrdemProcesso
 from rest_framework.response import Response
 
@@ -65,34 +66,20 @@ class ProcedimentoViewSet(ModelViewSet):
     def update(self, request, *args, **kwargs):
         return super(ProcedimentoViewSet, self).update(request, *args, **kwargs)
 
+    # Usar o metodo HTTP PATCH
     def partial_update(self, request, *args, **kwargs):
         procedimento = self.get_object()
 
         # TODO Nesse trecho podem ser colocados os campos a serem atualizados quando for necessário
         procedimento.status = request.data.get('status', procedimento.status)
         procedimento.tempo_realizado = request.data.get('tempo_realizado', procedimento.tempo_realizado)
-        # Fim
+
+        operador = request.data.get('operador', None)
+        if operador is not None:
+            if operador != '':
+                operador_id = User.objects.get(id=operador)
+                procedimento.operador = operador_id
 
         procedimento.save()
         serializer = ProcedimentoShortSerializer(procedimento)
         return Response(serializer.data)
-
-    # @action(methods=['POST'], detail=True)
-    # def update_status(self, request, pk, *args, **kwargs):
-    #
-    #     pass
-
-
-"""
-Verifica qual status da atividade anterior a atual. 
-"""
-
-# @action(methods=['get'], detail=True)
-# def verificar_status_pre(self, request, pk):
-#
-#     procedimento = Procedimento.objects.get(id=pk)
-#     if procedimento is not None:
-#         serializer = ProcedimentoShortSerializer(procedimento)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-#     else:
-#         return Response({'response': 'sem predecedente'}, status=status.HTTP_404_NOT_FOUND)

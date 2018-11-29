@@ -40,7 +40,7 @@ class ProcedimentoShortSerializer(ModelSerializer):
         model = Procedimento
         fields = (
             'id', 'ordem_roteiro', 'tempo_estimado', 'descricao',
-            'setup', 'status'
+            'setup', 'status', 'operador'
         )
 
     def get_status(self, obj):
