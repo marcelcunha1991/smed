@@ -1,3 +1,5 @@
+import decimal
+
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
@@ -106,6 +108,18 @@ class ProcedimentoViewSet(ModelViewSet):
         else:
             return Response('The status field is empty', status=status.HTTP_404_NOT_FOUND)
 
-    @action(methods=['get'], detail=True)
+    @action(methods=['POST'], detail=True)
     def finalizar_procedimento(self, request, pk):
-        pass
+        procedimento = self.get_object()
+        procedimento.tempo_realizado = request.data.get('tempo_realizado', procedimento.tempo_realizado)
+
+        tempo_calculado = (procedimento.tempo_estimado - decimal.Decimal(procedimento.tempo_realizado))
+
+        if tempo_calculado < 0:
+            procedimento.status = 4
+        else:
+            procedimento.status = 3
+
+        procedimento.save()
+
+        return Response(status=status.HTTP_200_OK)
