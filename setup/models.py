@@ -83,7 +83,7 @@ class Procedimento(models.Model):
     status = models.IntegerField(choices=STATUS_CHOICES, default=1, blank=True, null=True)
     observacao = models.TextField(max_length=100, blank=True, null=True)
     created = models.DateTimeField('Criado em', auto_now_add=True, blank=True, null=True)
-    modified = models.DateTimeField('Modificado em', auto_now_add=True, blank=True, null=True)
+    modified = models.DateTimeField('Modificado em', auto_now=True, blank=True, null=True)
 
     def __str__(self):
         return '%s %s' % (self.descricao, self.ordem_roteiro)
