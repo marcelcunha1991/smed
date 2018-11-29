@@ -11,6 +11,7 @@ class OrdemProcessoSerializer(ModelSerializer):
 
 class EtapaProcessoSerializer(ModelSerializer):
     op = OrdemProcessoSerializer()
+
     # gerente = SerializerMethodField()
 
     class Meta:
@@ -53,6 +54,17 @@ class ProcedimentoDetailsSerializer(ModelSerializer):
     class Meta:
         model = Procedimento
         fields = '__all__'
+
+    def get_status(self, obj):
+        return obj.get_status_display()
+
+
+class ProcedimentoStatusSerializer(ModelSerializer):
+    status = SerializerMethodField()
+
+    class Meta:
+        model = Procedimento
+        fields = ('status',)
 
     def get_status(self, obj):
         return obj.get_status_display()

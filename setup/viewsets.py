@@ -10,7 +10,7 @@ from setup.serializers import (
     EtapaProcessoSerializer,
     SetupSerializer,
     OrdemProcessoSerializer,
-    ProcedimentoShortSerializer, ProcedimentoDetailsSerializer)
+    ProcedimentoShortSerializer, ProcedimentoDetailsSerializer, ProcedimentoStatusSerializer)
 
 
 class OrdemProcessoViewSet(ModelViewSet):
@@ -83,3 +83,20 @@ class ProcedimentoViewSet(ModelViewSet):
         procedimento.save()
         serializer = ProcedimentoShortSerializer(procedimento)
         return Response(serializer.data)
+
+    # Verifica qual o status da atividade anterior a atual.
+    @action(methods=['get'], detail=True)
+    def verify_status_pre(self, request, pk):
+        predecessorId = self.get_object().predecessor.id
+        predecessor = Procedimento.objects.get(id=predecessorId)
+
+        print(predecessor.status)
+
+        serializer = ProcedimentoStatusSerializer(predecessor)
+        if predecessor.status is not None:
+            if predecessor.status >= 3:
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.data, status=status.HTTP_406_NOT_ACCEPTABLE)
+        else:
+            return Response('Object with empty predecessor status', status=status.HTTP_406_NOT_ACCEPTABLE)
