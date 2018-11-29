@@ -66,13 +66,16 @@ class ProcedimentoViewSet(ModelViewSet):
     def update(self, request, *args, **kwargs):
         return super(ProcedimentoViewSet, self).update(request, *args, **kwargs)
 
-    # Usar o metodo HTTP PATCH
+    # Usar o metodo HTTP PATCH no front-end
     def partial_update(self, request, *args, **kwargs):
         procedimento = self.get_object()
 
         # TODO Nesse trecho podem ser colocados os campos a serem atualizados quando for necessário
         procedimento.status = request.data.get('status', procedimento.status)
+        procedimento.descricao = request.data.get('descricao', procedimento.descricao)
+        procedimento.tempo_estimado = request.data.get('tempo_estimado', procedimento.tempo_estimado)
         procedimento.tempo_realizado = request.data.get('tempo_realizado', procedimento.tempo_realizado)
+        procedimento.observacao = request.data.get('observacao', procedimento.observacao)
 
         operador = request.data.get('operador', None)
         if operador is not None:
@@ -102,3 +105,7 @@ class ProcedimentoViewSet(ModelViewSet):
                 return Response(serializer.data, status=status.HTTP_406_NOT_ACCEPTABLE)
         else:
             return Response('The status field is empty', status=status.HTTP_404_NOT_FOUND)
+
+    @action(methods=['get'], detail=True)
+    def finalizar_procedimento(self, request, pk):
+        pass
