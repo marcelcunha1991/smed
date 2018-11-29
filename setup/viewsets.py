@@ -113,13 +113,13 @@ class ProcedimentoViewSet(ModelViewSet):
         procedimento = self.get_object()
         procedimento.tempo_realizado = request.data.get('tempo_realizado', procedimento.tempo_realizado)
 
-        tempo_calculado = (procedimento.tempo_estimado - decimal.Decimal(procedimento.tempo_realizado))
+        serializer = ProcedimentoShortSerializer(procedimento)
 
-        if tempo_calculado < 0:
-            procedimento.status = 4
-        else:
+        if decimal.Decimal(procedimento.tempo_realizado) <= procedimento.tempo_estimado:
             procedimento.status = 3
+        else:
+            procedimento.status = 4
 
         procedimento.save()
 
-        return Response(status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
