@@ -76,8 +76,8 @@ class ProcedimentoViewSet(ModelViewSet):
         procedimento.status = request.data.get('status', procedimento.status)
         procedimento.descricao = request.data.get('descricao', procedimento.descricao)
         procedimento.tempo_estimado = request.data.get('tempo_estimado', procedimento.tempo_estimado)
-        procedimento.tempo_realizado = request.data.get('tempo_realizado', procedimento.tempo_realizado)
-        procedimento.observacao = request.data.get('observacao', procedimento.observacao)
+        # procedimento.tempo_realizado = request.data.get('tempo_realizado', procedimento.tempo_realizado)
+        # procedimento.observacao = request.data.get('observacao', procedimento.observacao)
 
         operador = request.data.get('operador', None)
         if operador is not None:
