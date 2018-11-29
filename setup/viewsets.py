@@ -87,16 +87,18 @@ class ProcedimentoViewSet(ModelViewSet):
     # Verifica qual o status da atividade anterior a atual.
     @action(methods=['get'], detail=True)
     def verify_status_pre(self, request, pk):
-        predecessorId = self.get_object().predecessor.id
-        predecessor = Procedimento.objects.get(id=predecessorId)
-
-        print(predecessor.status)
+        if self.get_object().predecessor is not None:
+            predecessorId = self.get_object().predecessor.id
+            predecessor = Procedimento.objects.get(id=predecessorId)
+        else:
+            return Response('the object has no predecessor', status=status.HTTP_404_NOT_FOUND)
 
         serializer = ProcedimentoStatusSerializer(predecessor)
+
         if predecessor.status is not None:
             if predecessor.status >= 3:
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
                 return Response(serializer.data, status=status.HTTP_406_NOT_ACCEPTABLE)
         else:
-            return Response('Object with empty predecessor status', status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response('The status field is empty', status=status.HTTP_404_NOT_FOUND)
