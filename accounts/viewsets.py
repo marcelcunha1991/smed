@@ -47,7 +47,7 @@ class LogoutViewSet(APIView):
             if user.is_active:
                 user.is_logged = False
                 user.save()
-                return Response(status=status.HTTP_200_OK)
+                return Response('Deslogado', status=status.HTTP_200_OK)
             else:
                 return Response(status=status.HTTP_404_NOT_FOUND)
         else:
