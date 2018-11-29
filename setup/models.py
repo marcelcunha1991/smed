@@ -23,7 +23,7 @@ class EtapaProcesso(models.Model):
     codigo = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        return '%s %s - %s ' % (self.op, self.descricao, self.etapa)
+        return '%s - %s %s ' % (self.op, self.descricao, self.etapa)
 
     class Meta:
         verbose_name = 'Etapa do Processo'
@@ -56,7 +56,7 @@ class Setup(models.Model):
     status = models.IntegerField(choices=STATUS_CHOICES, default=2)
 
     def __str__(self):
-        return '%s %s - %s' % (self.processo, self.descricao, self.tipo)
+        return '%s - %s %s' % (self.processo, self.descricao, self.tipo)
 
     class Meta:
         unique_together = (('processo', 'tipo'),)
@@ -91,3 +91,4 @@ class Procedimento(models.Model):
 
     class Meta:
         unique_together = (('setup', 'ordem_roteiro'),)
+        ordering = ['ordem_roteiro']
