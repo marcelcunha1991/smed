@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from django.shortcuts import render
 from accounts.models import User, Cargo
-from accounts.serializers import UserSerializer, CargoSerializer
+from accounts.serializers import UserSerializer, CargoSerializer, UserLoggedSerializer
 
 
 class UserViewSet(ModelViewSet):
@@ -24,7 +24,7 @@ class LoginViewSet(APIView):
         user = authenticate(username=username, password=password)
         if user is not None:
             if user.is_active:
-                serializer = UserSerializer(user)
+                serializer = UserLoggedSerializer(user)
                 user.is_logged = True
                 user.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
