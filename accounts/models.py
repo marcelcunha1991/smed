@@ -18,7 +18,6 @@ class Cargo(models.Model):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-
     username = models.CharField(
         'Apelido / Usuário', max_length=30, unique=True, validators=[
             validators.RegexValidator(
@@ -64,3 +63,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             return "Usuário Logado"
         else:
             return "Usuário deslogado"
+
+    @property
+    def cargo_descricao(self):
+        return self.cargo.descricao

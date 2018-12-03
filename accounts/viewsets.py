@@ -12,6 +12,11 @@ class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    def retrieve(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = UserLoggedSerializer(user)
+        return Response(serializer.data)
+
 
 class LoginViewSet(APIView):
 
