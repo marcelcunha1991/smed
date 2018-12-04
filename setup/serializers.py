@@ -17,7 +17,7 @@ class EtapaProcessoSerializer(ModelSerializer):
     class Meta:
         model = EtapaProcesso
         fields = (
-            'id', 'op', 'etapa', 'gerente', 'gerente_desc',
+            'id', 'op', 'etapa', 'gerente', 'gerente_name',
             'maquina', 'descricao', 'status'
         )
 

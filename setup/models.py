@@ -31,8 +31,8 @@ class EtapaProcesso(models.Model):
         unique_together = (('op', 'etapa'),)
 
     @property
-    def gerente_desc(self):
-        return '%s' % self.gerente
+    def gerente_name(self):
+        return '%s' % self.gerente.name or self.gerente.username
 
 
 class Setup(models.Model):
