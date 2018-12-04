@@ -61,6 +61,10 @@ class Setup(models.Model):
     class Meta:
         unique_together = (('processo', 'tipo'),)
 
+    @property
+    def responsavel_name(self):
+        return '%s' % self.responsavel.name or self.responsavel.username
+
 
 class Procedimento(models.Model):
     STATUS_CHOICES = (

@@ -10,7 +10,7 @@ class OrdemProcessoSerializer(ModelSerializer):
 
 
 class EtapaProcessoSerializer(ModelSerializer):
-    op = OrdemProcessoSerializer()
+    # op = OrdemProcessoSerializer()
 
     # gerente = SerializerMethodField()
 
@@ -23,14 +23,21 @@ class EtapaProcessoSerializer(ModelSerializer):
 
 
 class SetupSerializer(ModelSerializer):
-    tipo = SerializerMethodField()
+    tipo_descricao = SerializerMethodField()
+    status_descricao = SerializerMethodField()
 
     class Meta:
         model = Setup
-        fields = '__all__'
+        fields = (
+            'id', 'descricao', 'processo', 'responsavel', 'responsavel_name',
+            'hora_inicio', 'tipo', 'tipo_descricao', 'status', 'status_descricao'
+        )
 
-    def get_tipo(self, obj):
+    def get_tipo_descricao(self, obj):
         return obj.get_tipo_display()
+
+    def get_status_descricao(self, obj):
+        return obj.get_status_display()
 
 
 #  Mostra os campos necessários quando for listar uma coleção de procedimentos
