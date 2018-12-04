@@ -37,10 +37,6 @@ class SetupViewSet(ModelViewSet):
     queryset = Setup.objects.all()
     serializer_class = SetupSerializer
 
-    @action(methods=['get'], detail=True)
-    def listar_por_processo(self, request, **kwargs):
-        pass
-
 
 class ProcedimentoViewSet(ModelViewSet):
     serializer_class = ProcedimentoShortSerializer
