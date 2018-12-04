@@ -49,18 +49,19 @@ class LogoutViewSet(APIView):
     def post(self, request):
         data = request.data
 
-        username = data.get('username', None)
-        password = data.get('password', None)
+        id = data.get('id', None)
+        # password = data.get('password', None)
 
-        user = authenticate(username=username, password=password)
-        if user is not None:
+        try:
+            user = User.objects.get(id=id)
             if user.is_active:
                 user.is_logged = False
                 user.save()
                 return Response('Deslogado', status=status.HTTP_200_OK)
             else:
                 return Response(status=status.HTTP_404_NOT_FOUND)
-        else:
+
+        except Exception:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 
