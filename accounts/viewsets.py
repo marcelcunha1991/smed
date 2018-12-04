@@ -17,6 +17,11 @@ class UserViewSet(ModelViewSet):
         serializer = UserLoggedSerializer(user)
         return Response(serializer.data)
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = UserLoggedSerializer(queryset, many=True)
+        return Response(serializer.data)
+
 
 class LoginViewSet(APIView):
 

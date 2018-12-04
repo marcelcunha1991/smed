@@ -25,7 +25,7 @@ from maquinas.viewsets import MaquinasViewSet
 from setup.viewsets import OrdemProcessoViewSet, EtapaProcessoViewSet, SetupViewSet, ProcedimentoViewSet
 
 router = routers.DefaultRouter()
-router.register(r'user', UserViewSet)
+router.register(r'user', UserViewSet, base_name='User')
 router.register(r'maquinas', MaquinasViewSet)
 router.register(r'ordem-processo', OrdemProcessoViewSet)
 router.register(r'etapa-processo', EtapaProcessoViewSet)
