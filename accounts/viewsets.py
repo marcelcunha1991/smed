@@ -10,7 +10,7 @@ from accounts.serializers import UserSerializer, CargoSerializer, UserLoggedSeri
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserLoggedSerializer
 
     def retrieve(self, request, *args, **kwargs):
         user = self.get_object()
