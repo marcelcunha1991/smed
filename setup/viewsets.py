@@ -129,6 +129,7 @@ class ProcedimentoViewSet(ModelViewSet):
         procedimento.status = 5
         procedimento.save()
 
+
         serializer = ProcedimentoDetailsSerializer(procedimento)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
