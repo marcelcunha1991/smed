@@ -97,4 +97,4 @@ class Procedimento(models.Model):
         verbose_name = 'Procedimento - Atividade'
         verbose_name_plural = 'Procedimentos - Atividades'
         unique_together = (('setup', 'ordem_roteiro'),)
-        ordering = ['ordem_roteiro']
+        # ordering = ['ordem_roteiro']

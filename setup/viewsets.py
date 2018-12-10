@@ -1,7 +1,10 @@
 import decimal
 
+from django.db.models import Count, Sum
+from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.fields import SerializerMethodField
 from rest_framework.viewsets import ModelViewSet
 
 from accounts.models import User
@@ -129,7 +132,34 @@ class ProcedimentoViewSet(ModelViewSet):
         procedimento.status = 5
         procedimento.save()
 
-
         serializer = ProcedimentoDetailsSerializer(procedimento)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=False)
+    def listar_etapa_cargo(self, request):
+        op = self.request.data.get('op', None)
+        setor = self.request.data.get('setor', None)
+        status_ = '1'
+
+        procedimento = Procedimento.objects.values(
+            'setup__processo__id',
+            'setup__processo__descricao',
+            'setup__processo__maquina__descricao',
+            'setup__processo__etapa',
+            'setup__processo__gerente__name',
+            # 'setor__descricao'
+        ) \
+            .annotate(qtde_atividades=Count('setor')).filter(
+            setor=setor,
+            status=status_
+            # setup__processo__op=op
+        )
+        try:
+            if op:
+                procedimento = procedimento.filter(setup__processo__op=op)
+        except Exception as e:
+            mensagem = {'error': e.args[0]}
+            return Response(mensagem, status=404)
+
+        return Response(procedimento, status=status.HTTP_200_OK)
