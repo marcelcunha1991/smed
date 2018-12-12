@@ -138,8 +138,8 @@ class ProcedimentoViewSet(ModelViewSet):
 
     @action(methods=['get'], detail=False)
     def listar_etapa_cargo(self, request):
-        op = self.request.data.get('op', None)
-        setor = self.request.data.get('setor', None)
+        op = self.request.query_params.get('op', None)
+        setor = self.request.query_params.get('setor', None)
         status_ = '1'
 
         procedimento = Procedimento.objects.values(
