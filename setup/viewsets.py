@@ -162,4 +162,4 @@ class ProcedimentoViewSet(ModelViewSet):
             mensagem = {'error': e.args[0]}
             return Response(mensagem, status=404)
 
-        return Response(procedimento, status=status.HTTP_200_OK)
+        return Response({'etapa_processo':procedimento}, status=status.HTTP_200_OK)
