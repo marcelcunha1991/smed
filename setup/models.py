@@ -21,6 +21,7 @@ class EtapaProcesso(models.Model):
     gerente = models.ForeignKey(User, verbose_name='Gerente', on_delete=models.CASCADE)
     status = models.CharField(max_length=20, default='Ativo', blank=True, null=True)
     codigo = models.CharField(max_length=100, blank=True, null=True)
+    hora_inicio = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return '%s - %s %s ' % (self.op, self.descricao, self.etapa)
@@ -51,7 +52,7 @@ class Setup(models.Model):
                                  verbose_name='Etapa do Processo')
     responsavel = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     created = models.DateTimeField('Criado em', auto_now_add=True, blank=True, null=True)
-    hora_inicio = models.DateTimeField(blank=True, null=True)
+    # hora_inicio = models.DateTimeField(blank=True, null=True)
     tipo = models.IntegerField(choices=TIPO_CHOICES, blank=True, null=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=2)
 

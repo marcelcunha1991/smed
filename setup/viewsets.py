@@ -146,9 +146,11 @@ class ProcedimentoViewSet(ModelViewSet):
             'setup__processo__id',
             'setup__processo__descricao',
             'setup__processo__maquina__descricao',
+            'setup__processo__op__descricao',
             'setup__processo__etapa',
+            'setup__processo__hora_inicio',
             'setup__processo__gerente__name',
-            # 'setor__descricao'
+            'setor__descricao'
         ) \
             .annotate(qtde_atividades=Count('setor')).filter(
             setor=setor,

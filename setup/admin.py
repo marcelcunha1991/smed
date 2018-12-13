@@ -7,12 +7,12 @@ class OrdemProcessoAdmin(admin.ModelAdmin):
 
 
 class EtapaProcessoAdmin(admin.ModelAdmin):
-    list_display = ['id', 'descricao', 'etapa', 'op', 'maquina', 'gerente', 'status']
+    list_display = ['id', 'descricao', 'etapa', 'op', 'maquina', 'gerente', 'hora_inicio', 'status']
     list_filter = ('op',)
 
 
 class SetupAdmin(admin.ModelAdmin):
-    list_display = ['id', 'descricao', 'tipo', 'processo', 'responsavel', 'created', 'hora_inicio', 'status']
+    list_display = ['id', 'descricao', 'tipo', 'processo', 'responsavel', 'created', 'status']
     list_filter = ('processo', 'status', 'tipo',)
 
 
