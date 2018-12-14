@@ -40,6 +40,26 @@ class SetupViewSet(ModelViewSet):
     queryset = Setup.objects.all()
     serializer_class = SetupSerializer
 
+    @action(methods=['get'], detail=True)
+    def listar_procedimentos(self, request, pk):
+
+        try:
+            externo = Procedimento.objects.filter(setup__processo=pk, setup__tipo=1)
+            interno = Procedimento.objects.filter(setup__processo=pk, setup__tipo=2)
+
+            serializer1 = ProcedimentoShortSerializer(externo, many=True)
+            serializer2 = ProcedimentoShortSerializer(interno, many=True)
+
+            data = {
+                'procedimento_externo': serializer1.data,
+                'procedimento_interno': serializer2.data
+            }
+
+        except Exception as e:
+            return Response({'error': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(data, status=status.HTTP_200_OK)
+
 
 class ProcedimentoViewSet(ModelViewSet):
     serializer_class = ProcedimentoShortSerializer
@@ -164,4 +184,4 @@ class ProcedimentoViewSet(ModelViewSet):
             mensagem = {'error': e.args[0]}
             return Response(mensagem, status=404)
 
-        return Response({'etapa_processo':procedimento}, status=status.HTTP_200_OK)
+        return Response({'etapa_processo': procedimento}, status=status.HTTP_200_OK)
