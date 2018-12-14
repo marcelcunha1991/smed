@@ -51,8 +51,8 @@ class SetupViewSet(ModelViewSet):
             serializer2 = ProcedimentoShortSerializer(interno, many=True)
 
             data = {
-                'procedimento_externo': serializer1.data,
-                'procedimento_interno': serializer2.data
+                'setup_externo': serializer1.data,
+                'setup_interno': serializer2.data
             }
 
         except Exception as e:
