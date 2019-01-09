@@ -1,10 +1,8 @@
 import decimal
 
-from django.db.models import Count, Sum
-from django.http import JsonResponse
+from django.db.models import Count
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.fields import SerializerMethodField
 from rest_framework.viewsets import ModelViewSet
 
 from accounts.models import User
@@ -185,3 +183,18 @@ class ProcedimentoViewSet(ModelViewSet):
             return Response(mensagem, status=404)
 
         return Response({'etapa_processo': procedimento}, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=False)
+    def verificar_procedimento_aberto(self, request):
+        user = self.request.query_params.get('operador', None)
+
+        try:
+            procedimento = Procedimento.objects.filter(operador=user, status=2)
+            if not procedimento:  # Verifica se a lista for zero, vazio ou false
+                return Response({'menssage': 'Empty List'}, status=status.HTTP_404_NOT_FOUND)
+
+            serializer = ProcedimentoShortSerializer(procedimento, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'menssage': e.args[0]}, status=status.HTTP_404_NOT_FOUND)
