@@ -47,7 +47,7 @@ class ProcedimentoShortSerializer(ModelSerializer):
     class Meta:
         model = Procedimento
         fields = (
-            'id', 'ordem_roteiro', 'tempo_estimado', 'descricao',
+            'id', 'ordem_roteiro', 'tempo_estimado', 'tempo_realizado', 'descricao',
             'setup', 'status', 'operador'
         )
 

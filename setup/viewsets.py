@@ -90,17 +90,20 @@ class ProcedimentoViewSet(ModelViewSet):
         procedimento = self.get_object()
 
         # TODO Nesse trecho podem ser colocados os campos a serem atualizados quando for necessário
-        procedimento.status = request.data.get('status', procedimento.status)
         procedimento.descricao = request.data.get('descricao', procedimento.descricao)
         procedimento.tempo_estimado = request.data.get('tempo_estimado', procedimento.tempo_estimado)
-        # procedimento.tempo_realizado = request.data.get('tempo_realizado', procedimento.tempo_realizado)
-        # procedimento.observacao = request.data.get('observacao', procedimento.observacao)
+        procedimento.status = request.data.get('status', procedimento.status)
 
-        operador = request.data.get('operador', None)
-        if operador is not None:
-            if operador != '':
+        try:
+            # Se estiver sendo passado o parametro operador
+            # a atividade esta sendo inicado, logo, o status muda para "Realizando"
+            operador = request.data.get('operador', None)
+            if operador:
                 operador_id = User.objects.get(id=operador)
                 procedimento.operador = operador_id
+                procedimento.status = 2
+        except Exception as e:
+            print('Erro ao tentar salvar usuario ' + e.args[0])
 
         procedimento.save()
         serializer = ProcedimentoShortSerializer(procedimento)
@@ -108,7 +111,7 @@ class ProcedimentoViewSet(ModelViewSet):
 
     # Verifica qual o status da atividade anterior a atual.
     @action(methods=['get'], detail=True)
-    def verify_status_pre(self, request, pk):
+    def verify_status_pre(self, request):
         if self.get_object().predecessor is not None:
             predecessorId = self.get_object().predecessor.id
             predecessor = Procedimento.objects.get(id=predecessorId)
@@ -128,16 +131,28 @@ class ProcedimentoViewSet(ModelViewSet):
     @action(methods=['POST'], detail=True)
     def finalizar_procedimento(self, request, pk):
         procedimento = self.get_object()
-        procedimento.tempo_realizado = request.data.get('tempo_realizado', procedimento.tempo_realizado)
+
+        procedimento.tempo_realizado = request.data.get('tempo_realizado', None)
+        procedimento.status = request.data.get('status', None)
+
+        observacao = request.data.get('observacao', None)
+        if observacao:
+            procedimento.observacao = observacao
 
         serializer = ProcedimentoShortSerializer(procedimento)
 
-        if decimal.Decimal(procedimento.tempo_realizado) <= procedimento.tempo_estimado:
-            procedimento.status = 3
-        else:
-            procedimento.status = 4
-
         procedimento.save()
+
+        setor = procedimento.setor
+        pro = Procedimento.objects.filter(setor=setor, status=1)
+        # Se retornar vazio, nao existem atividades pendentes
+        # logo, o status do processo deve ser alterado para "finalizado"
+        if not pro:
+            processo_id = procedimento.setup.processo.id
+            etapa = EtapaProcesso.objects.get(id=processo_id)
+            # TODO mudar o tipo da variável "status" para integer
+            etapa.status = 'Finalizado'
+            etapa.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -158,7 +173,6 @@ class ProcedimentoViewSet(ModelViewSet):
     def listar_etapa_cargo(self, request):
         op = self.request.query_params.get('op', None)
         setor = self.request.query_params.get('setor', None)
-        status_ = '1'
 
         procedimento = Procedimento.objects.values(
             'setup__processo__id',
@@ -172,7 +186,7 @@ class ProcedimentoViewSet(ModelViewSet):
         ) \
             .annotate(qtde_atividades=Count('setor')).filter(
             setor=setor,
-            status=status_
+            status=1
             # setup__processo__op=op
         )
         try:

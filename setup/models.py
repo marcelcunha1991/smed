@@ -14,6 +14,12 @@ class OrdemProcesso(models.Model):
 
 # TODO colocar os campos DESCRICAO, STATUS como obrigatórios depois.
 class EtapaProcesso(models.Model):
+
+    # STATUS_CHOICES = (
+    #     (1, 'Ativo'),
+    #     (2, 'Finalizado'),
+    #     (3, 'Inativo'),
+    # )
     op = models.ForeignKey(OrdemProcesso, on_delete=models.PROTECT)
     etapa = models.IntegerField(blank=True, null=True)
     maquina = models.ForeignKey(Maquinas, on_delete=models.CASCADE, blank=True, null=True)
@@ -73,7 +79,8 @@ class Procedimento(models.Model):
         (2, 'Realizando'),
         (3, 'Realizado com sucesso'),
         (4, 'Realizado fora do tempo'),
-        (5, 'Realizado com justificativa'),
+        (5, 'Não necessario'),
+        (6, 'Finalizado com pendencias'),
     )
 
     ordem_roteiro = models.IntegerField(blank=True, null=True)
@@ -83,12 +90,13 @@ class Procedimento(models.Model):
     predecessor = models.ForeignKey('self', on_delete=models.PROTECT, blank=True, null=True)
     operador = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Operador', on_delete=models.CASCADE,
                                  blank=True, null=True)
-    tempo_estimado = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    tempo_realizado = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    tempo_estimado = models.CharField(max_length=10, blank=True, null=True)
+    tempo_realizado = models.CharField(max_length=10, blank=True, null=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=1, blank=True, null=True)
     observacao = models.TextField(max_length=100, blank=True, null=True)
     created = models.DateTimeField('Criado em', auto_now_add=True, blank=True, null=True)
     modified = models.DateTimeField('Modificado em', auto_now=True, blank=True, null=True)
+    # etapa = models.ForeignKey()
 
     def __str__(self):
         return '%s %s' % (self.descricao, self.ordem_roteiro)
