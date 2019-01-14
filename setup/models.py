@@ -107,5 +107,5 @@ class Procedimento(models.Model):
     class Meta:
         verbose_name = 'Procedimento - Atividade'
         verbose_name_plural = 'Procedimentos - Atividades'
-        # unique_together = (('setup', 'ordem_roteiro'),)
+        unique_together = (('processo', 'ordem_roteiro', 'tipo'),)
         # ordering = ['ordem_roteiro']
