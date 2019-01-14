@@ -6,12 +6,12 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 
 from accounts.models import User
-from setup.models import EtapaProcesso, Setup, Procedimento, OrdemProcesso
+from setup.models import EtapaProcesso, Procedimento, OrdemProcesso
 from rest_framework.response import Response
 
 from setup.serializers import (
     EtapaProcessoSerializer,
-    SetupSerializer,
+    # SetupSerializer,
     OrdemProcessoSerializer,
     ProcedimentoShortSerializer, ProcedimentoDetailsSerializer, ProcedimentoStatusSerializer)
 
@@ -34,43 +34,43 @@ class EtapaProcessoViewSet(ModelViewSet):
         return Response(serializer.data)
 
 
-class SetupViewSet(ModelViewSet):
-    queryset = Setup.objects.all()
-    serializer_class = SetupSerializer
-
-    @action(methods=['get'], detail=True)
-    def listar_procedimentos(self, request, pk):
-
-        try:
-            externo = Procedimento.objects.filter(setup__processo=pk, setup__tipo=1)
-            interno = Procedimento.objects.filter(setup__processo=pk, setup__tipo=2)
-
-            serializer1 = ProcedimentoShortSerializer(externo, many=True)
-            serializer2 = ProcedimentoShortSerializer(interno, many=True)
-
-            data = {
-                'setup_externo': serializer1.data,
-                'setup_interno': serializer2.data
-            }
-
-        except Exception as e:
-            return Response({'error': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(data, status=status.HTTP_200_OK)
+# class SetupViewSet(ModelViewSet):
+#     queryset = Setup.objects.all()
+#     serializer_class = SetupSerializer
+#
+#     @action(methods=['get'], detail=True)
+#     def listar_procedimentos(self, request, pk):
+#
+#         try:
+#             externo = Procedimento.objects.filter(setup__processo=pk, setup__tipo=1)
+#             interno = Procedimento.objects.filter(setup__processo=pk, setup__tipo=2)
+#
+#             serializer1 = ProcedimentoShortSerializer(externo, many=True)
+#             serializer2 = ProcedimentoShortSerializer(interno, many=True)
+#
+#             data = {
+#                 'setup_externo': serializer1.data,
+#                 'setup_interno': serializer2.data
+#             }
+#
+#         except Exception as e:
+#             return Response({'error': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+#
+#         return Response(data, status=status.HTTP_200_OK)
 
 
 class ProcedimentoViewSet(ModelViewSet):
     serializer_class = ProcedimentoShortSerializer
 
     def get_queryset(self):
-        setup = self.request.data.get('setup', None)
+        # setup = self.request.data.get('setup', None)
         setor_id = self.request.data.get('setor_id', None)
         setor_nome = self.request.data.get('setor_nome', None)
 
         queryset = Procedimento.objects.all()
 
-        if setup:
-            queryset = queryset.filter(setup=setup)
+        # if setup:
+        #     queryset = queryset.filter(setup=setup)
 
         if setor_id or setor_nome:
             queryset = queryset.filter(setor=setor_id) | queryset.filter(setor__descricao=setor_nome)
@@ -144,59 +144,69 @@ class ProcedimentoViewSet(ModelViewSet):
         procedimento.save()
 
         setor = procedimento.setor
-        pro = Procedimento.objects.filter(setor=setor, status=1)
+        pro = Procedimento.objects.filter(status=1)
         # Se retornar vazio, nao existem atividades pendentes
         # logo, o status do processo deve ser alterado para "finalizado"
         if not pro:
-            processo_id = procedimento.setup.processo.id
+            processo_id = procedimento.processo.id
             etapa = EtapaProcesso.objects.get(id=processo_id)
-            # TODO mudar o tipo da variável "status" para integer
-            etapa.status = 'Finalizado'
+            etapa.status = 2
             etapa.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(methods=['POST'], detail=True)
-    def finalizar_com_justificativa(self, request, pk):
-        procedimento = self.get_object()
-        procedimento.tempo_realizado = request.data.get('tempo_realizado', procedimento.tempo_realizado)
-        procedimento.observacao = request.data.get('observacao', procedimento.observacao)
+    @action(methods=['get'], detail=True)
+    def listar_procedimentos(self, request, pk):
 
-        procedimento.status = 5
-        procedimento.save()
+        queryset = Procedimento.objects.filter(processo=pk)
 
-        serializer = ProcedimentoDetailsSerializer(procedimento)
+        try:
+            if not queryset:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            else:
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+                externo = queryset.filter(tipo=1)
+                interno = queryset.filter(tipo=2)
+
+                serializer1 = ProcedimentoShortSerializer(externo, many=True)
+                serializer2 = ProcedimentoShortSerializer(interno, many=True)
+
+                data = {
+                    'setup_externo': serializer1.data,
+                    'setup_interno': serializer2.data
+                }
+                return Response(data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['get'], detail=False)
     def listar_etapa_cargo(self, request):
         op = self.request.query_params.get('op', None)
         setor = self.request.query_params.get('setor', None)
 
-        procedimento = Procedimento.objects.values(
-            'setup__processo__id',
-            'setup__processo__descricao',
-            'setup__processo__maquina__descricao',
-            'setup__processo__op__descricao',
-            'setup__processo__etapa',
-            'setup__processo__hora_inicio',
-            'setup__processo__gerente__name',
-            'setor__descricao'
-        ) \
-            .annotate(qtde_atividades=Count('setor')).filter(
-            setor=setor,
-            status=1
-            # setup__processo__op=op
-        )
         try:
+            procedimento = Procedimento.objects.values(
+                'processo__id',
+                'processo__descricao',
+                'processo__maquina__descricao',
+                'processo__op__descricao',
+                'processo__etapa',
+                'processo__hora_inicio',
+                'processo__gerente__name',
+            ).annotate(qtde_atividades=Count('setor')).filter(
+                setor=setor,
+                status=1
+            )
             if op:
-                procedimento = procedimento.filter(setup__processo__op=op)
+                procedimento = procedimento.filter(processo__op=op)
+
+            if not procedimento:
+                return Response({'message': 'List is empty or null'}, status=status.HTTP_404_NOT_FOUND)
+
+            return Response({'etapa_processo': procedimento}, status=status.HTTP_200_OK)
         except Exception as e:
             mensagem = {'error': e.args[0]}
             return Response(mensagem, status=404)
-
-        return Response({'etapa_processo': procedimento}, status=status.HTTP_200_OK)
 
     @action(methods=['get'], detail=False)
     def verificar_procedimento_aberto(self, request):

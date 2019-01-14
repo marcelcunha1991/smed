@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
-from setup.models import EtapaProcesso, Setup, Procedimento, OrdemProcesso
+from setup.models import EtapaProcesso, Procedimento, OrdemProcesso
 
 
 class OrdemProcessoSerializer(ModelSerializer):
@@ -22,22 +22,22 @@ class EtapaProcessoSerializer(ModelSerializer):
         )
 
 
-class SetupSerializer(ModelSerializer):
-    tipo_descricao = SerializerMethodField()
-    status_descricao = SerializerMethodField()
-
-    class Meta:
-        model = Setup
-        fields = (
-            'id', 'descricao', 'processo', 'responsavel', 'responsavel_name',
-            'hora_inicio', 'tipo', 'tipo_descricao', 'status', 'status_descricao'
-        )
-
-    def get_tipo_descricao(self, obj):
-        return obj.get_tipo_display()
-
-    def get_status_descricao(self, obj):
-        return obj.get_status_display()
+# class SetupSerializer(ModelSerializer):
+#     tipo_descricao = SerializerMethodField()
+#     status_descricao = SerializerMethodField()
+#
+#     class Meta:
+#         model = Setup
+#         fields = (
+#             'id', 'descricao', 'processo', 'responsavel', 'responsavel_name',
+#             'hora_inicio', 'tipo', 'tipo_descricao', 'status', 'status_descricao'
+#         )
+#
+#     def get_tipo_descricao(self, obj):
+#         return obj.get_tipo_display()
+#
+#     def get_status_descricao(self, obj):
+#         return obj.get_status_display()
 
 
 #  Mostra os campos necessários quando for listar uma coleção de procedimentos
@@ -47,8 +47,8 @@ class ProcedimentoShortSerializer(ModelSerializer):
     class Meta:
         model = Procedimento
         fields = (
-            'id', 'ordem_roteiro', 'tempo_estimado', 'tempo_realizado', 'descricao',
-            'setup', 'status', 'operador'
+            'id', 'ordem_roteiro', 'tempo_estimado', 'tempo_realizado', 'descricao', 'status', 'operador',
+            'processo'
         )
 
     def get_status(self, obj):
