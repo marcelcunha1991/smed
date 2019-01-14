@@ -22,6 +22,22 @@ class UserViewSet(ModelViewSet):
         serializer = UserLoggedSerializer(queryset, many=True)
         return Response(serializer.data)
 
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        try:
+            user = User.objects.create_user(data['username'], data['email'],
+                                            data['password'])
+            cargo = Cargo.objects.get(id=data['cargo'])
+
+            user.cargo = cargo
+            user.name = data['name']
+            user.phone = data['phone']
+            user.save()
+            serializer = UserLoggedSerializer(user)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response({'mensage': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LoginViewSet(APIView):
 

@@ -28,5 +28,5 @@ class UserLoggedSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'name', 'email', 'cargo', 'cargo_descricao', 'is_logged')
+        fields = ('id', 'username', 'name', 'email', 'phone', 'cargo', 'cargo_descricao', 'is_logged')
 

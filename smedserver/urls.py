@@ -20,12 +20,13 @@ from django.conf.urls.static import static
 from django.urls import path
 from rest_framework import routers
 
-from accounts.viewsets import UserViewSet, LoginViewSet, LogoutViewSet, index
+from accounts.viewsets import UserViewSet, CargoViewSet, LoginViewSet, LogoutViewSet, index
 from maquinas.viewsets import MaquinasViewSet
 from setup.viewsets import OrdemProcessoViewSet, EtapaProcessoViewSet, ProcedimentoViewSet
 
 router = routers.DefaultRouter()
 router.register(r'user', UserViewSet, base_name='User')
+router.register(r'cargo', CargoViewSet)
 router.register(r'maquinas', MaquinasViewSet)
 router.register(r'ordem-processo', OrdemProcessoViewSet)
 router.register(r'etapa-processo', EtapaProcessoViewSet)
