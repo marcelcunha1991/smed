@@ -128,6 +128,20 @@ class ProcedimentoViewSet(ModelViewSet):
         else:
             return Response('The status field is empty', status=status.HTTP_404_NOT_FOUND)
 
+    @action(methods=['post'], detail=True)
+    def iniciar_procedimento(self, request, pk):
+        procedimento = self.get_object()
+
+        try:
+            operador = request.data.get('operador', None)
+            operador_id = User.objects.get(id=operador)
+            procedimento.operador = operador_id
+            procedimento.status = 2  # status = Realizando
+        except Exception as e:
+            print('Erro ao tentar salvar usuario ' + e.args[0])
+
+        procedimento.save()
+
     @action(methods=['POST'], detail=True)
     def finalizar_procedimento(self, request, pk):
         procedimento = self.get_object()
