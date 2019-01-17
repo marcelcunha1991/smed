@@ -132,28 +132,46 @@ class ProcedimentoViewSet(ModelViewSet):
     def finalizar_procedimento(self, request, pk):
         procedimento = self.get_object()
 
-        procedimento.tempo_realizado = request.data.get('tempo_realizado', None)
-        procedimento.status = request.data.get('status', None)
-
-        observacao = request.data.get('observacao', None)
-        if observacao:
-            procedimento.observacao = observacao
+        procedimento.hora_fim = request.data.get('hora_fim', None)
 
         serializer = ProcedimentoShortSerializer(procedimento)
-
         procedimento.save()
 
-        setor = procedimento.setor
+        try:
+            self.verificar_procedimento(procedimento)
+        except Exception as e:
+            print('Erro ao verificar se existem procedimentos fechados >> ' + e.args[0])
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=['POST'], detail=True)
+    def finalizar_com_justificativa(self, request, pk):
+        procedimento = self.get_object()
+
+        procedimento.hora_fim = request.data.get('hora_fim', None)
+        procedimento.status = request.data.get('status', None)
+        procedimento.observacao = request.data.get('observacao', None)
+
+        serializer = ProcedimentoShortSerializer(procedimento)
+        procedimento.save()
+
+        try:
+            self.verificar_procedimento(procedimento)
+        except Exception as e:
+            print('Erro ao verificar se existem procedimentos fechados >> ' + e.args[0])
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def verificar_procedimento(procedimento):
         pro = Procedimento.objects.filter(status=1)
         # Se retornar vazio, nao existem atividades pendentes
-        # logo, o status do processo deve ser alterado para "finalizado"
+        # # logo, o status do processo deve ser alterado para "finalizado"
         if not pro:
             processo_id = procedimento.processo.id
             etapa = EtapaProcesso.objects.get(id=processo_id)
             etapa.status = 2
             etapa.save()
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(methods=['get'], detail=True)
     def listar_procedimentos(self, request, pk):

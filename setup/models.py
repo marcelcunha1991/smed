@@ -99,6 +99,9 @@ class Procedimento(models.Model):
     observacao = models.TextField(max_length=100, blank=True, null=True)
     processo = models.ForeignKey(EtapaProcesso, verbose_name='Etapa', on_delete=models.CASCADE, blank=True, null=True)
     tipo = models.IntegerField(choices=TIPO_CHOICES, null=True, blank=True)
+    hora_inicio = models.DateTimeField(blank=True, null=True)
+    hora_fim = models.DateTimeField(blank=True, null=True)
+    tempo_realizado2 = models.DurationField(blank=True, null=True)
 
     def __str__(self):
         return '%s %s' % (self.descricao, self.ordem_roteiro)
