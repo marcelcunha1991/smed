@@ -131,32 +131,33 @@ class ProcedimentoViewSet(ModelViewSet):
     @action(methods=['post'], detail=True)
     def iniciar_procedimento(self, request, pk):
         procedimento = self.get_object()
+        procedimento.hora_inicio = request.data.get('hora_inicio', None)
 
         try:
             operador = request.data.get('operador', None)
             operador_id = User.objects.get(id=operador)
             procedimento.operador = operador_id
             procedimento.status = 2  # status = Realizando
+            procedimento.save()
+            return Response(status=status.HTTP_200_OK)
         except Exception as e:
-            print('Erro ao tentar salvar usuario ' + e.args[0])
-
-        procedimento.save()
+            return Response({'mensage': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['POST'], detail=True)
     def finalizar_procedimento(self, request, pk):
         procedimento = self.get_object()
 
         procedimento.hora_fim = request.data.get('hora_fim', None)
-
-        serializer = ProcedimentoShortSerializer(procedimento)
-        procedimento.save()
-
+        procedimento.status = 3
         try:
-            self.verificar_procedimento(procedimento)
-        except Exception as e:
-            print('Erro ao verificar se existem procedimentos fechados >> ' + e.args[0])
+            procedimento.save()
+            serializer = ProcedimentoShortSerializer(procedimento)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            self.verificar_procedimento(procedimento)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            msg = e.args[0]
+            return Response({'mensage': msg}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['POST'], detail=True)
     def finalizar_com_justificativa(self, request, pk):
@@ -166,19 +167,18 @@ class ProcedimentoViewSet(ModelViewSet):
         procedimento.status = request.data.get('status', None)
         procedimento.observacao = request.data.get('observacao', None)
 
-        serializer = ProcedimentoShortSerializer(procedimento)
-        procedimento.save()
-
         try:
+            procedimento.save()
+            serializer = ProcedimentoShortSerializer(procedimento)
+
             self.verificar_procedimento(procedimento)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
-            print('Erro ao verificar se existem procedimentos fechados >> ' + e.args[0])
+            msg = e.args[0]
+            return Response({'mensage': msg}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    @staticmethod
-    def verificar_procedimento(procedimento):
-        pro = Procedimento.objects.filter(status=1)
+    def verificar_procedimento(self, procedimento):
+        pro = Procedimento.objects.filter(status=1) | Procedimento.objects.filter(status=2)
         # Se retornar vazio, nao existem atividades pendentes
         # # logo, o status do processo deve ser alterado para "finalizado"
         if not pro:
@@ -187,6 +187,9 @@ class ProcedimentoViewSet(ModelViewSet):
             etapa.status = 2
             etapa.save()
 
+    # TODO mudar este método usando o query_params.get()
+    # procedimento/{id}/listar_procedimento/
+    # procedimento/listar_procedimento/?processo_id={?}
     @action(methods=['get'], detail=True)
     def listar_procedimentos(self, request, pk):
 
