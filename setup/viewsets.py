@@ -1,5 +1,9 @@
 import decimal
 
+from datetime import datetime
+from django.utils import timezone
+import pytz
+
 from django.db.models import Count
 from rest_framework import status
 from rest_framework.decorators import action
@@ -34,31 +38,6 @@ class EtapaProcessoViewSet(ModelViewSet):
         return Response(serializer.data)
 
 
-# class SetupViewSet(ModelViewSet):
-#     queryset = Setup.objects.all()
-#     serializer_class = SetupSerializer
-#
-#     @action(methods=['get'], detail=True)
-#     def listar_procedimentos(self, request, pk):
-#
-#         try:
-#             externo = Procedimento.objects.filter(setup__processo=pk, setup__tipo=1)
-#             interno = Procedimento.objects.filter(setup__processo=pk, setup__tipo=2)
-#
-#             serializer1 = ProcedimentoShortSerializer(externo, many=True)
-#             serializer2 = ProcedimentoShortSerializer(interno, many=True)
-#
-#             data = {
-#                 'setup_externo': serializer1.data,
-#                 'setup_interno': serializer2.data
-#             }
-#
-#         except Exception as e:
-#             return Response({'error': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
-#
-#         return Response(data, status=status.HTTP_200_OK)
-
-
 class ProcedimentoViewSet(ModelViewSet):
     serializer_class = ProcedimentoShortSerializer
 
@@ -68,9 +47,6 @@ class ProcedimentoViewSet(ModelViewSet):
         setor_nome = self.request.data.get('setor_nome', None)
 
         queryset = Procedimento.objects.all()
-
-        # if setup:
-        #     queryset = queryset.filter(setup=setup)
 
         if setor_id or setor_nome:
             queryset = queryset.filter(setor=setor_id) | queryset.filter(setor__descricao=setor_nome)
@@ -149,7 +125,14 @@ class ProcedimentoViewSet(ModelViewSet):
 
         procedimento.hora_fim = request.data.get('hora_fim', None)
         procedimento.status = 3
+
         try:
+            inicio = procedimento.hora_inicio.strftime("%Y-%m-%d %H:%M:%S")
+            data_inicio = datetime.strptime(inicio, "%Y-%m-%d %H:%M:%S")
+            data_fim = datetime.strptime(procedimento.hora_fim, "%Y-%m-%d %H:%M:%S")
+            result = (data_fim - data_inicio).seconds
+
+            procedimento.tempo_realizado = result * 1000
             procedimento.save()
             serializer = ProcedimentoShortSerializer(procedimento)
 

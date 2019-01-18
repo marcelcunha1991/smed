@@ -101,7 +101,6 @@ class Procedimento(models.Model):
     tipo = models.IntegerField(choices=TIPO_CHOICES, null=True, blank=True)
     hora_inicio = models.DateTimeField(blank=True, null=True)
     hora_fim = models.DateTimeField(blank=True, null=True)
-    tempo_realizado2 = models.DurationField(blank=True, null=True)
 
     def __str__(self):
         return '%s %s' % (self.descricao, self.ordem_roteiro)
