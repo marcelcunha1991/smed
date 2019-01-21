@@ -111,3 +111,11 @@ class Procedimento(models.Model):
         verbose_name_plural = 'Procedimentos - Atividades'
         unique_together = (('processo', 'ordem_roteiro', 'tipo'),)
         # ordering = ['ordem_roteiro']
+
+    @property
+    def operador_name(self):
+        return '%s' % self.operador.name or self.operador.username
+
+    @property
+    def processo_descricao(self):
+        return '%s' % str(self.processo.descricao)

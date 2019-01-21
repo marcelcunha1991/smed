@@ -1,5 +1,6 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
+from accounts.serializers import UserLoggedSerializer
 from setup.models import EtapaProcesso, Procedimento, OrdemProcesso
 
 
@@ -48,7 +49,7 @@ class ProcedimentoShortSerializer(ModelSerializer):
         model = Procedimento
         fields = (
             'id', 'ordem_roteiro', 'tempo_estimado', 'tempo_realizado', 'descricao', 'status', 'operador',
-            'processo'
+            'operador_name', 'processo', 'processo_descricao'
         )
 
     def get_status(self, obj):
