@@ -58,13 +58,22 @@ class ProcedimentoShortSerializer(ModelSerializer):
 
 class ProcedimentoDetailsSerializer(ModelSerializer):
     status = SerializerMethodField()
+    tipo = SerializerMethodField()
 
     class Meta:
         model = Procedimento
-        fields = '__all__'
+        fields = (
+            'id', 'ordem_roteiro', 'descricao', 'status', 'tempo_estimado', 'tempo_realizado', 'operador',
+            'operador_name', 'processo', 'processo_descricao', 'observacao', 'tipo',
+            'hora_inicio', 'hora_fim'
+
+        )
 
     def get_status(self, obj):
         return obj.get_status_display()
+
+    def get_tipo(self, obj):
+        return obj.get_tipo_display()
 
 
 class ProcedimentoStatusSerializer(ModelSerializer):
