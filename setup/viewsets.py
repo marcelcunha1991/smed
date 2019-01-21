@@ -241,7 +241,7 @@ class ProcedimentoViewSet(ModelViewSet):
             if not procedimento:  # Verifica se a lista for zero, vazio ou false
                 return Response({'menssage': 'Empty List'}, status=status.HTTP_404_NOT_FOUND)
 
-            serializer = ProcedimentoShortSerializer(procedimento, many=True)
+            serializer = ProcedimentoDetailsSerializer(procedimento, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         except Exception as e:
