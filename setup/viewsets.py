@@ -107,10 +107,14 @@ class ProcedimentoViewSet(ModelViewSet):
     @action(methods=['post'], detail=True)
     def iniciar_procedimento(self, request, pk):
         procedimento = self.get_object()
-        procedimento.hora_inicio = request.data.get('hora_inicio', None)
+        operador = request.data.get('operador', None)
+        hora_inicio = request.data.get('hora_inicio', None)
+
+        if not hora_inicio:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            operador = request.data.get('operador', None)
+            procedimento.hora_inicio = hora_inicio
             operador_id = User.objects.get(id=operador)
             procedimento.operador = operador_id
             procedimento.status = 2  # status = Realizando
