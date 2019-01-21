@@ -42,7 +42,7 @@ class ProcedimentoViewSet(ModelViewSet):
     serializer_class = ProcedimentoShortSerializer
 
     def get_queryset(self):
-        # setup = self.request.data.get('setup', None)
+        processo_id = self.request.query_params.get('processo', None)
         setor_id = self.request.data.get('setor_id', None)
         setor_nome = self.request.data.get('setor_nome', None)
 
@@ -50,6 +50,8 @@ class ProcedimentoViewSet(ModelViewSet):
 
         if setor_id or setor_nome:
             queryset = queryset.filter(setor=setor_id) | queryset.filter(setor__descricao=setor_nome)
+        if processo_id:
+            queryset = queryset.filter(processo=processo_id)
 
         return queryset
 
