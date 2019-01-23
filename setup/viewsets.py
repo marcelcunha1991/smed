@@ -38,8 +38,6 @@ class EtapaProcessoViewSet(ModelViewSet):
         return Response(serializer.data)
 
 
-
-
 class ProcedimentoViewSet(ModelViewSet):
     serializer_class = ProcedimentoShortSerializer
 
@@ -277,11 +275,27 @@ class ProcedimentoViewSet(ModelViewSet):
     def mask_ms_to_sring(self):
         pass
 
-    def convert_tempo_estimado(self, data_inicio):
+    @action(methods=['get'], detail=False)
+    def convert_tempo_estimado(self, request):
+        data_inicio1 = self.request.query_params.get('data_inicio', None)
+        tempo_estimado_str = '00:30:00'
+
+        data_inicio = datetime.strptime(data_inicio1, '%Y-%m-%d %H:%M:%S').time()
+        print('dataInicio str', type(data_inicio))
         hora_str = data_inicio.strftime('%H')
         min_str = data_inicio.strftime('%M')
         seg_str = data_inicio.strftime('%S')
 
+        hora_str = tempo_estimado_str.strftime('%H')
+        min_str = tempo_estimado_str.strftime('%M')
+        seg_str = tempo_estimado_str.strftime('%S')
+
+        if seg_str == '00':
+            pass
+        if min_str == '00':
+            pass
+        if hora_str == '00':
+            pass
 
 
         pass
