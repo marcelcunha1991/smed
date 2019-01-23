@@ -49,37 +49,6 @@ class EtapaProcesso(models.Model):
         return '%s' % self.maquina.descricao
 
 
-# class Setup(models.Model):
-#     TIPO_CHOICES = (
-#         (1, 'Externo'),
-#         (2, 'Interno'),
-#     )
-#
-#     STATUS_CHOICES = (
-#         (1, 'Ativo'),
-#         (2, 'Inativo'),
-#     )
-#
-#     descricao = models.CharField(max_length=50)
-#     processo = models.ForeignKey(EtapaProcesso, blank=True, null=True, on_delete=models.CASCADE,
-#                                  verbose_name='Etapa do Processo')
-#     responsavel = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-#     created = models.DateTimeField('Criado em', auto_now_add=True, blank=True, null=True)
-#     # hora_inicio = models.DateTimeField(blank=True, null=True)
-#     tipo = models.IntegerField(choices=TIPO_CHOICES, blank=True, null=True)
-#     status = models.IntegerField(choices=STATUS_CHOICES, default=2)
-#
-#     def __str__(self):
-#         return '%s - %s %s' % (self.processo, self.descricao, self.tipo)
-#
-#     class Meta:
-#         unique_together = (('processo', 'tipo'),)
-#
-#     @property
-#     def responsavel_name(self):
-#         return '%s' % self.responsavel.name or self.responsavel.username
-
-
 class Procedimento(models.Model):
     STATUS_CHOICES = (
         (1, 'Pendente'),

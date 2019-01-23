@@ -280,25 +280,28 @@ class ProcedimentoViewSet(ModelViewSet):
         data_inicio_str = self.request.query_params.get('data_inicio', None)
         data_inicio = datetime.strptime(data_inicio_str, '%Y-%m-%d %H:%M:%S').time()
 
-        tempo_estimado_str = '00:30:00'
-        tempo_estimado_str = datetime.strptime(tempo_estimado_str, '%%H:%M:%S').time()
-
         print('dataInicio str', type(data_inicio))
+
+        millisegundos_out = ''
 
         hora_str = data_inicio.strftime('%H')
         min_str = data_inicio.strftime('%M')
         seg_str = data_inicio.strftime('%S')
 
-        hora_str = tempo_estimado_str.strftime('%H')
-        min_str = tempo_estimado_str.strftime('%M')
-        seg_str = tempo_estimado_str.strftime('%S')
+        tempo_estimado_str = '00:30:00'
+        tempo_estimado_data = datetime.strptime(tempo_estimado_str, '%H:%M:%S').time()
 
-        if seg_str == '00':
+        print('dataInicio str', type(tempo_estimado_data))
+
+        t_hora_str = tempo_estimado_data.strftime('%H')
+        t_min_str = tempo_estimado_data.strftime('%M')
+        t_seg_str = tempo_estimado_data.strftime('%S')
+
+        if t_hora_str == '00':
             pass
-        if min_str == '00':
+        if t_min_str == '00':
             pass
-        if hora_str == '00':
+        if t_seg_str == '00':
             pass
 
-
-        pass
+        return millisegundos_out
