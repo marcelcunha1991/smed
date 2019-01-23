@@ -23,3 +23,8 @@ class Maquinas(models.Model):
     class Meta:
         verbose_name = 'Maquina'
         verbose_name_plural = 'Maquinas'
+
+    @property
+    def tipo_nome(self):
+        return '%s' % self.tipo.nome
+

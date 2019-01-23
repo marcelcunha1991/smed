@@ -70,7 +70,7 @@ class ProcedimentoViewSet(ModelViewSet):
             procedimento.processo = EtapaProcesso.objects.get(id=data['processo'])
             procedimento.save()
             serializer = ProcedimentoShortSerializer(procedimento)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'message': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
 

@@ -10,6 +10,7 @@ class TipoSerializer(ModelSerializer):
 
 
 class MaquinasSerializer(ModelSerializer):
+
     class Meta:
         model = Maquinas
-        fields = '__all__'
+        fields = ('id', 'descricao', 'tipo', 'tipo_nome', 'status')
