@@ -1,6 +1,6 @@
 import decimal
 
-from datetime import datetime
+from datetime import date, datetime
 from django.utils import timezone
 import pytz
 
@@ -36,6 +36,8 @@ class EtapaProcessoViewSet(ModelViewSet):
         queryset = EtapaProcesso.objects.filter(op=pk)
         serializer = EtapaProcessoSerializer(queryset, many=True)
         return Response(serializer.data)
+
+
 
 
 class ProcedimentoViewSet(ModelViewSet):
@@ -271,3 +273,15 @@ class ProcedimentoViewSet(ModelViewSet):
 
         except Exception as e:
             return Response({'menssage': e.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
+    def mask_ms_to_sring(self):
+        pass
+
+    def convert_tempo_estimado(self, data_inicio):
+        hora_str = data_inicio.strftime('%H')
+        min_str = data_inicio.strftime('%M')
+        seg_str = data_inicio.strftime('%S')
+
+
+
+        pass

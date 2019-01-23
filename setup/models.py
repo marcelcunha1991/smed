@@ -40,6 +40,10 @@ class EtapaProcesso(models.Model):
     def gerente_name(self):
         return '%s' % self.gerente.name or self.gerente.username
 
+    @property
+    def op_descricao(self):
+        return '%s' % self.op.descricao
+
 
 # class Setup(models.Model):
 #     TIPO_CHOICES = (
