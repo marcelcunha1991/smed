@@ -31,7 +31,7 @@ class UserViewSet(ModelViewSet):
 
             user.cargo = cargo
             user.name = data['name']
-            user.phone = data['phone']
+            user.phone = request.data.get('phone', None)
             user.save()
             serializer = UserLoggedSerializer(user)
             return Response(serializer.data)

@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 
-from accounts.models import User
+from accounts.models import User, Cargo
 from setup.models import EtapaProcesso, Procedimento, OrdemProcesso
 from rest_framework.response import Response
 
@@ -54,6 +54,25 @@ class ProcedimentoViewSet(ModelViewSet):
             queryset = queryset.filter(processo=processo_id)
 
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        try:
+            procedimento = Procedimento.objects.create(
+                ordem_roteiro=data['ordem_roteiro'],
+                descricao=data['descricao'],
+                tempo_estimado=data['tempo_estimado'],
+                tipo=data['tipo'],
+                hora_inicio=data['hora_inicio']
+            )
+            procedimento.setor = Cargo.objects.get(id=data['setor'])
+            procedimento.predecessor = Procedimento.objects.get(id=data['predecessor'])
+            procedimento.processo = EtapaProcesso.objects.get(id=data['processo'])
+            procedimento.save()
+            serializer = ProcedimentoShortSerializer(procedimento)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'message': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
         procedimento = self.get_object()
