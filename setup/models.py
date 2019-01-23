@@ -44,6 +44,10 @@ class EtapaProcesso(models.Model):
     def op_descricao(self):
         return '%s' % self.op.descricao
 
+    @property
+    def maquina_descricao(self):
+        return '%s' % self.maquina.descricao
+
 
 # class Setup(models.Model):
 #     TIPO_CHOICES = (

@@ -277,11 +277,14 @@ class ProcedimentoViewSet(ModelViewSet):
 
     @action(methods=['get'], detail=False)
     def convert_tempo_estimado(self, request):
-        data_inicio1 = self.request.query_params.get('data_inicio', None)
-        tempo_estimado_str = '00:30:00'
+        data_inicio_str = self.request.query_params.get('data_inicio', None)
+        data_inicio = datetime.strptime(data_inicio_str, '%Y-%m-%d %H:%M:%S').time()
 
-        data_inicio = datetime.strptime(data_inicio1, '%Y-%m-%d %H:%M:%S').time()
+        tempo_estimado_str = '00:30:00'
+        tempo_estimado_str = datetime.strptime(tempo_estimado_str, '%%H:%M:%S').time()
+
         print('dataInicio str', type(data_inicio))
+
         hora_str = data_inicio.strftime('%H')
         min_str = data_inicio.strftime('%M')
         seg_str = data_inicio.strftime('%S')
