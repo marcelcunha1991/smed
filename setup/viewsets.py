@@ -66,7 +66,11 @@ class ProcedimentoViewSet(ModelViewSet):
                 hora_inicio=data['hora_inicio']
             )
             procedimento.setor = Cargo.objects.get(id=data['setor'])
-            procedimento.predecessor = Procedimento.objects.get(id=data['predecessor'])
+
+            predecessor = self.request.data.get('predecessor', None)
+            if predecessor:
+                procedimento.predecessor = Procedimento.objects.get(id=predecessor)
+
             procedimento.processo = EtapaProcesso.objects.get(id=data['processo'])
             procedimento.tempo_estimado_ms = self.convert_date_ms(procedimento.tempo_estimado)
             procedimento.save()
