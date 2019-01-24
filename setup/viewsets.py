@@ -1,6 +1,6 @@
 import decimal
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta, time
 from django.utils import timezone
 import pytz
 
@@ -58,7 +58,7 @@ class ProcedimentoViewSet(ModelViewSet):
     def create(self, request, *args, **kwargs):
         data = request.data
         try:
-            procedimento = Procedimento.objects.create(
+            procedimento = Procedimento(
                 ordem_roteiro=data['ordem_roteiro'],
                 descricao=data['descricao'],
                 tempo_estimado=data['tempo_estimado'],
@@ -68,6 +68,7 @@ class ProcedimentoViewSet(ModelViewSet):
             procedimento.setor = Cargo.objects.get(id=data['setor'])
             procedimento.predecessor = Procedimento.objects.get(id=data['predecessor'])
             procedimento.processo = EtapaProcesso.objects.get(id=data['processo'])
+            procedimento.tempo_estimado_ms = self.convert_date_ms(procedimento.tempo_estimado)
             procedimento.save()
             serializer = ProcedimentoShortSerializer(procedimento)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -92,15 +93,12 @@ class ProcedimentoViewSet(ModelViewSet):
         procedimento.status = request.data.get('status', procedimento.status)
 
         try:
-            # Se estiver sendo passado o parametro operador
-            # a atividade esta sendo inicado, logo, o status muda para "Realizando"
             operador = request.data.get('operador', None)
             if operador:
                 operador_id = User.objects.get(id=operador)
                 procedimento.operador = operador_id
-                procedimento.status = 2
         except Exception as e:
-            print('Erro ao tentar salvar usuario ' + e.args[0])
+            return Response({'message': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
 
         procedimento.save()
         serializer = ProcedimentoShortSerializer(procedimento)
@@ -157,7 +155,8 @@ class ProcedimentoViewSet(ModelViewSet):
             data_fim = datetime.strptime(procedimento.hora_fim, "%Y-%m-%d %H:%M:%S")
             result = (data_fim - data_inicio).seconds
 
-            procedimento.tempo_realizado = result * 1000
+            procedimento.tempo_realizado_ms = str(result * 1000)
+            procedimento.tempo_realizado = self.convert_ms_date_mask(procedimento.tempo_realizado_ms)
             procedimento.save()
             serializer = ProcedimentoShortSerializer(procedimento)
 
@@ -181,7 +180,8 @@ class ProcedimentoViewSet(ModelViewSet):
             data_fim = datetime.strptime(procedimento.hora_fim, "%Y-%m-%d %H:%M:%S")
             result = (data_fim - data_inicio).seconds
 
-            procedimento.tempo_realizado = result * 1000
+            procedimento.tempo_realizado_ms = str(result * 1000)
+            procedimento.tempo_realizado = self.convert_ms_date_mask(procedimento.tempo_realizado_ms)
             procedimento.save()
             serializer = ProcedimentoShortSerializer(procedimento)
 
@@ -272,36 +272,18 @@ class ProcedimentoViewSet(ModelViewSet):
         except Exception as e:
             return Response({'menssage': e.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
-    def mask_ms_to_sring(self):
-        pass
+    def convert_date_ms(self, date_string):
 
-    @action(methods=['get'], detail=False)
-    def convert_tempo_estimado(self, request):
-        data_inicio_str = self.request.query_params.get('data_inicio', None)
-        data_inicio = datetime.strptime(data_inicio_str, '%Y-%m-%d %H:%M:%S').time()
+        date_time = datetime.strptime(date_string, '%H:%M:%S').time()
 
-        print('dataInicio str', type(data_inicio))
+        t_hora_str = int(date_time.strftime('%H'))
+        t_min_str = int(date_time.strftime('%M'))
+        t_seg_str = int(date_time.strftime('%S'))
 
-        millisegundos_out = ''
+        total_ms = timedelta(hours=t_hora_str, minutes=t_min_str, seconds=t_seg_str).seconds * 1000
+        return total_ms
 
-        hora_str = data_inicio.strftime('%H')
-        min_str = data_inicio.strftime('%M')
-        seg_str = data_inicio.strftime('%S')
-
-        tempo_estimado_str = '00:30:00'
-        tempo_estimado_data = datetime.strptime(tempo_estimado_str, '%H:%M:%S').time()
-
-        print('dataInicio str', type(tempo_estimado_data))
-
-        t_hora_str = tempo_estimado_data.strftime('%H')
-        t_min_str = tempo_estimado_data.strftime('%M')
-        t_seg_str = tempo_estimado_data.strftime('%S')
-
-        if t_hora_str == '00':
-            pass
-        if t_min_str == '00':
-            pass
-        if t_seg_str == '00':
-            pass
-
-        return millisegundos_out
+    def convert_ms_date_mask(self, request_ms):
+        request_seconds = int(request_ms) // 1000
+        out = timedelta(seconds=request_seconds)
+        return str(out)

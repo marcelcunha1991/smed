@@ -71,7 +71,9 @@ class Procedimento(models.Model):
     operador = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Operador', on_delete=models.CASCADE,
                                  blank=True, null=True)
     tempo_estimado = models.CharField(max_length=10, blank=True, null=True)
+    tempo_estimado_ms = models.CharField(max_length=50, blank=True, null=True)
     tempo_realizado = models.CharField(max_length=10, blank=True, null=True)
+    tempo_realizado_ms = models.CharField(max_length=50, blank=True, null=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=1, blank=True, null=True)
     observacao = models.TextField(max_length=100, blank=True, null=True)
     processo = models.ForeignKey(EtapaProcesso, verbose_name='Etapa', on_delete=models.CASCADE, blank=True, null=True)

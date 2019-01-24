@@ -35,7 +35,8 @@ class ProcedimentoShortSerializer(ModelSerializer):
     class Meta:
         model = Procedimento
         fields = (
-            'id', 'ordem_roteiro', 'descricao', 'tempo_estimado', 'tempo_realizado',
+            'id', 'ordem_roteiro', 'descricao', 'tempo_estimado', 'tempo_estimado_ms',
+            'tempo_realizado', 'tempo_realizado_ms',
             'tipo', 'hora_inicio', 'status', 'operador',
             'operador_name', 'processo', 'processo_descricao'
         )
@@ -54,7 +55,8 @@ class ProcedimentoDetailsSerializer(ModelSerializer):
     class Meta:
         model = Procedimento
         fields = (
-            'id', 'ordem_roteiro', 'descricao', 'status', 'tempo_estimado', 'tempo_realizado', 'operador',
+            'id', 'ordem_roteiro', 'descricao', 'status', 'tempo_estimado', 'tempo_estimado_ms',
+            'tempo_realizado', 'tempo_realizado_ms', 'operador',
             'operador_name', 'processo', 'processo_descricao', 'observacao', 'tipo',
             'hora_inicio', 'hora_fim'
 
