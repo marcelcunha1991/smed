@@ -63,7 +63,6 @@ class ProcedimentoViewSet(ModelViewSet):
                 descricao=data['descricao'],
                 tempo_estimado=data['tempo_estimado'],
                 tipo=data['tipo'],
-                hora_inicio=data['hora_inicio']
             )
             procedimento.setor = Cargo.objects.get(id=data['setor'])
 
