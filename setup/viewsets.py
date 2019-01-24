@@ -186,7 +186,7 @@ class ProcedimentoViewSet(ModelViewSet):
             procedimento.tempo_realizado_ms = str(result * 1000)
             procedimento.tempo_realizado = self.convert_ms_date_mask(procedimento.tempo_realizado_ms)
             procedimento.save()
-            serializer = ProcedimentoShortSerializer(procedimento)
+            serializer = ProcedimentoDetailsSerializer(procedimento)
 
             self.verificar_procedimento(procedimento)
             return Response(serializer.data, status=status.HTTP_200_OK)
