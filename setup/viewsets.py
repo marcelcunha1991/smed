@@ -10,6 +10,7 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 
 from accounts.models import User, Cargo
+from maquinas.models import Maquinas
 from setup.models import EtapaProcesso, Procedimento, OrdemProcesso
 from rest_framework.response import Response
 
@@ -28,6 +29,38 @@ class OrdemProcessoViewSet(ModelViewSet):
 class EtapaProcessoViewSet(ModelViewSet):
     queryset = EtapaProcesso.objects.all()
     serializer_class = EtapaProcessoSerializer
+
+    def create(self, request, *args, **kwargs):
+        # op etapa gerente maquina descrica status
+        data = request.data
+        op = self.request.data.get('op', None)
+        gerente = self.request.data.get('gerente', None)
+        maquina = self.request.data.get('maquina', None)
+
+        try:
+            etapa = EtapaProcesso(etapa=data['etapa'], descricao=data['descricao'], status=data['status'])
+            etapa.op = OrdemProcesso.objects.get(id=op)
+            etapa.gerente = User.objects.get(id=gerente)
+            etapa.maquina = Maquinas.objects.get(id=maquina)
+            etapa.save()
+            return Response(status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'message': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        etapa = self.get_object()
+        etapa.status = request.data.get('status', etapa.status)
+        etapa.descricao = request.data.get('status', etapa.descricao)
+        etapa.etapa = request.data.get('etapa', etapa.etapa)
+        try:
+            gerente = request.data.get('gerente', None)
+            maquina = request.data.get('maquina', None)
+            etapa.gerente = User.objects.get(id=gerente)
+            etapa.maquina = Maquinas.objects.get(id=maquina)
+            etapa.save()
+            return Response(status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'message': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
 
     # Lista todos os processos (etapas) associadas a uma OP
     # url etapa-processo/{op_id}/listar_por_op/
@@ -58,14 +91,9 @@ class ProcedimentoViewSet(ModelViewSet):
     def create(self, request, *args, **kwargs):
         data = request.data
         try:
-            procedimento = Procedimento(
-                ordem_roteiro=data['ordem_roteiro'],
-                descricao=data['descricao'],
-                tempo_estimado=data['tempo_estimado'],
-                tipo=data['tipo'],
-            )
+            procedimento = Procedimento(ordem_roteiro=data['ordem_roteiro'], descricao=data['descricao'],
+                                        tempo_estimado=data['tempo_estimado'], tipo=data['tipo'])
             procedimento.setor = Cargo.objects.get(id=data['setor'])
-
             predecessor = self.request.data.get('predecessor', None)
             if predecessor:
                 procedimento.predecessor = Procedimento.objects.get(id=predecessor)
