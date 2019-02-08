@@ -195,6 +195,7 @@ class ProcedimentoViewSet(ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             msg = e.args[0]
+            print(msg)
             return Response({'mensage': msg}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['POST'], detail=True)
