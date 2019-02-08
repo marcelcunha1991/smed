@@ -177,7 +177,7 @@ class ProcedimentoViewSet(ModelViewSet):
     def finalizar_procedimento(self, request, pk):
         procedimento = self.get_object()
 
-        procedimento.hora_fim = request.data.get('hora_fim', None)
+        procedimento.hora_fim = self.request.query_params.get('hora_fim', None)
         procedimento.status = 3
 
         try:
@@ -201,9 +201,9 @@ class ProcedimentoViewSet(ModelViewSet):
     def finalizar_com_justificativa(self, request, pk):
         procedimento = self.get_object()
 
-        procedimento.hora_fim = request.data.get('hora_fim', None)
-        procedimento.status = request.data.get('status', None)
-        procedimento.observacao = request.data.get('observacao', None)
+        procedimento.hora_fim = self.request.query_params.get('hora_fim', None)
+        procedimento.status = self.request.query_params.get('status', None)
+        procedimento.observacao = self.request.query_params.get('observacao', None)
 
         try:
             inicio = procedimento.hora_inicio.strftime("%Y-%m-%d %H:%M:%S")
