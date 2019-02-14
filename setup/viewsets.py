@@ -1,24 +1,20 @@
-import decimal
-
-from datetime import date, datetime, timedelta, time
-from django.utils import timezone
-import pytz
+from datetime import datetime, timedelta
 
 from django.db.models import Count
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from accounts.models import User, Cargo
 from maquinas.models import Maquinas
 from setup.models import EtapaProcesso, Procedimento, OrdemProcesso
-from rest_framework.response import Response
-
 from setup.serializers import (
     EtapaProcessoSerializer,
     # SetupSerializer,
     OrdemProcessoSerializer,
-    ProcedimentoShortSerializer, ProcedimentoDetailsSerializer, ProcedimentoStatusSerializer)
+    ProcedimentoShortSerializer, ProcedimentoDetailsSerializer, ProcedimentoStatusSerializer,
+    RelatorioPeriodoSerializar, RelatorioFilterSerializer)
 
 
 class OrdemProcessoViewSet(ModelViewSet):
@@ -321,3 +317,41 @@ class ProcedimentoViewSet(ModelViewSet):
         request_seconds = int(request_ms) // 1000
         out = timedelta(seconds=request_seconds)
         return str(out)
+
+
+class RelatoriosViewSet(ModelViewSet):
+    queryset = Procedimento.objects.all()
+    serializer_class = RelatorioPeriodoSerializar
+
+    @action(methods=['post'], detail=False)
+    def processo_por_periodo(self, request):
+        processo = request.data.get('processo', None)
+        data_inicio = request.data.get('data_inicio', None)
+        data_fim = request.data.get('data_fim', None)
+
+        date_inicio = datetime.strptime(data_inicio, "%d/%m/%Y")
+        date_fim = datetime.strptime(data_fim, "%d/%m/%Y")
+
+        try:
+            queryset = Procedimento.objects.filter(processo__descricao=processo)
+            queryset = queryset.filter(hora_inicio__range=(date_inicio, date_fim))
+
+            externo = queryset.filter(tipo=1)
+            interno = queryset.filter(tipo=2)
+            filtro = {
+                'procedimento': processo,
+                'data_inicio': data_inicio,
+                'data_fim': data_fim}
+
+            serializer_externo = RelatorioPeriodoSerializar(externo, many=True)
+            serializer_interno = RelatorioPeriodoSerializar(interno, many=True)
+
+            data = {
+                'filtro': filtro,
+                'setup_externo': serializer_externo.data,
+                'setup_interno': serializer_interno.data
+            }
+            return Response(data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)

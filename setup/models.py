@@ -102,3 +102,11 @@ class Procedimento(models.Model):
     @property
     def predecessor_descricao(self):
         return '%s' % str(self.predecessor.descricao)
+
+    @property
+    def maquina(self):
+        return '%s' % str(self.processo.maquina.descricao)
+
+    @property
+    def op(self):
+        return '%s' % str(self.processo.op.descricao)
