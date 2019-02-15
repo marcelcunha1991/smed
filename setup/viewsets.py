@@ -366,7 +366,7 @@ class RelatoriosViewSet(ModelViewSet):
                 }
                 return Response(data, status=status.HTTP_200_OK)
             else:
-                return Response('', status=status.HTTP_404_NOT_FOUND)
+                return Response('Processo não encontrado', status=status.HTTP_404_NOT_FOUND)
 
         except Exception as e:
-            return Response({'error': e.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'error': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)

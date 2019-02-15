@@ -92,8 +92,7 @@ class RelatorioPeriodoSerializar(ModelSerializer):
         fields = ('id', 'maquina', 'op', 'descricao', 'ordem_roteiro',
                   'status', 'tempo_estimado', 'data_inicio', 'data_final',
                   'tempo_realizado', 'operador_name',
-                  'processo_descricao', 'processo', 'tipo', 'observacao'
-                  )
+                  'processo_descricao', 'processo', 'tipo', 'observacao')
 
     def get_status(self, obj):
         return obj.get_status_display()
