@@ -11,15 +11,10 @@ class EtapaProcessoAdmin(admin.ModelAdmin):
     list_filter = ('op',)
 
 
-# class SetupAdmin(admin.ModelAdmin):
-#     list_display = ['id', 'descricao', 'tipo', 'processo', 'responsavel', 'created', 'status']
-#     list_filter = ('processo', 'status', 'tipo',)
-
-
 class ProcedimentoAdmin(admin.ModelAdmin):
     list_display = ['id', 'descricao', 'ordem_roteiro', 'tipo', 'setor', 'operador', 'status',
                     'processo']
-    list_filter = ('setor',)
+    list_filter = ('setor', 'processo', 'tipo',)
 
 
 admin.site.register(OrdemProcesso, OrdemProcessoAdmin)

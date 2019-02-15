@@ -325,7 +325,8 @@ class RelatoriosViewSet(ModelViewSet):
 
     @action(methods=['post'], detail=False)
     def processo_por_periodo(self, request):
-        processo = request.data.get('processo', None)
+        processo = request.data.get('processo_desc', None)
+        processo_id = request.data.get('processo_id', None)
         data_inicio = request.data.get('data_inicio', None)
         data_fim = request.data.get('data_fim', None)
 
@@ -333,25 +334,39 @@ class RelatoriosViewSet(ModelViewSet):
         date_fim = datetime.strptime(data_fim, "%d/%m/%Y")
 
         try:
-            queryset = Procedimento.objects.filter(processo__descricao=processo)
-            queryset = queryset.filter(hora_inicio__range=(date_inicio, date_fim))
+            if processo:
+                queryset = Procedimento.objects.filter(processo__descricao=processo)
 
-            externo = queryset.filter(tipo=1)
-            interno = queryset.filter(tipo=2)
-            filtro = {
-                'procedimento': processo,
-                'data_inicio': data_inicio,
-                'data_fim': data_fim}
+            elif processo_id:
+                queryset = Procedimento.objects.filter(processo__id=processo_id)
 
-            serializer_externo = RelatorioPeriodoSerializar(externo, many=True)
-            serializer_interno = RelatorioPeriodoSerializar(interno, many=True)
+            if queryset:
+                queryset = queryset.filter(hora_inicio__range=(date_inicio, date_fim))
 
-            data = {
-                'filtro': filtro,
-                'setup_externo': serializer_externo.data,
-                'setup_interno': serializer_interno.data
-            }
-            return Response(data, status=status.HTTP_200_OK)
+                externo = []
+                interno = []
+                for procedimento in queryset:
+                    if procedimento.tipo == 1:
+                        externo.append(procedimento)
+                    else:
+                        interno.append(procedimento)
+
+                filtro = {
+                    'procedimento': queryset[0].processo.descricao,
+                    'data_inicio': data_inicio,
+                    'data_fim': data_fim}
+
+                serializer_externo = RelatorioPeriodoSerializar(externo, many=True)
+                serializer_interno = RelatorioPeriodoSerializar(interno, many=True)
+
+                data = {
+                    'filtro': filtro,
+                    'setup_externo': serializer_externo.data,
+                    'setup_interno': serializer_interno.data
+                }
+                return Response(data, status=status.HTTP_200_OK)
+            else:
+                return Response('', status=status.HTTP_404_NOT_FOUND)
 
         except Exception as e:
-            return Response({'error': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': e.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
