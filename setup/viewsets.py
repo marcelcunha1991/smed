@@ -249,8 +249,8 @@ class ProcedimentoViewSet(ModelViewSet):
                 return Response(status=status.HTTP_404_NOT_FOUND)
             else:
 
-                externo = queryset.filter(tipo=1)
-                interno = queryset.filter(tipo=2)
+                externo = queryset.filter(tipo=1).order_by('ordem_roteiro')
+                interno = queryset.filter(tipo=2).order_by('ordem_roteiro')
 
                 serializer1 = ProcedimentoShortSerializer(externo, many=True)
                 serializer2 = ProcedimentoShortSerializer(interno, many=True)
@@ -280,7 +280,7 @@ class ProcedimentoViewSet(ModelViewSet):
             ).annotate(qtde_atividades=Count('setor')).filter(
                 setor=setor,
                 status=1
-            )
+            ).order_by('etapa')
             if op:
                 procedimento = procedimento.filter(processo__op=op)
 
