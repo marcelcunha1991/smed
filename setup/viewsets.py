@@ -213,8 +213,8 @@ class ProcedimentoViewSet(ModelViewSet):
                 procedimento.tempo_realizado_ms = str(result * 1000)
                 procedimento.tempo_realizado = self.convert_ms_date_mask(procedimento.tempo_realizado_ms)
 
-            now = datetime.now()
-            procedimento.hora_inicio = now
+            # now = datetime.now()
+            # procedimento.hora_inicio = now
 
             procedimento.save()
             serializer = ProcedimentoDetailsSerializer(procedimento)
