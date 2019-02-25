@@ -280,7 +280,7 @@ class ProcedimentoViewSet(ModelViewSet):
             ).annotate(qtde_atividades=Count('setor')).filter(
                 setor=setor,
                 status=1
-            ).order_by('etapa')
+            )
             if op:
                 procedimento = procedimento.filter(processo__op=op)
 
