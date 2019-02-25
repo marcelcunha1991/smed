@@ -204,13 +204,15 @@ class ProcedimentoViewSet(ModelViewSet):
         procedimento.observacao = request.data.get('observacao', None)
 
         try:
-            inicio = procedimento.hora_inicio.strftime("%Y-%m-%d %H:%M:%S")
-            data_inicio = datetime.strptime(inicio, "%Y-%m-%d %H:%M:%S")
-            data_fim = datetime.strptime(procedimento.hora_fim, "%Y-%m-%d %H:%M:%S")
-            result = (data_fim - data_inicio).seconds
+            if procedimento.status == '4':
+                inicio = procedimento.hora_inicio.strftime("%Y-%m-%d %H:%M:%S")
+                data_inicio = datetime.strptime(inicio, "%Y-%m-%d %H:%M:%S")
+                data_fim = datetime.strptime(procedimento.hora_fim, "%Y-%m-%d %H:%M:%S")
+                result = (data_fim - data_inicio).seconds
 
-            procedimento.tempo_realizado_ms = str(result * 1000)
-            procedimento.tempo_realizado = self.convert_ms_date_mask(procedimento.tempo_realizado_ms)
+                procedimento.tempo_realizado_ms = str(result * 1000)
+                procedimento.tempo_realizado = self.convert_ms_date_mask(procedimento.tempo_realizado_ms)
+
             procedimento.save()
             serializer = ProcedimentoDetailsSerializer(procedimento)
 
