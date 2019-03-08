@@ -338,6 +338,8 @@ class RelatoriosViewSet(ModelViewSet):
         date_inicio = datetime.strptime(data_inicio, "%d/%m/%Y")
         date_fim = datetime.strptime(data_fim, "%d/%m/%Y")
 
+        print(processo + ' - ' + processo_id + ' - ' + data_inicio + ' - ' + data_fim)
+
         try:
             if processo:
                 queryset = Procedimento.objects.filter(processo__descricao=processo)
@@ -374,4 +376,5 @@ class RelatoriosViewSet(ModelViewSet):
                 return Response('Processo não encontrado', status=status.HTTP_404_NOT_FOUND)
 
         except Exception as e:
+            print('error > ', e.args[0])
             return Response({'error': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
