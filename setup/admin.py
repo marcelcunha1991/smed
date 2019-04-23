@@ -13,7 +13,7 @@ class EtapaProcessoAdmin(admin.ModelAdmin):
 
 class ProcedimentoAdmin(admin.ModelAdmin):
     list_display = ['id', 'descricao', 'ordem_roteiro', 'tipo', 'setor', 'operador', 'status',
-                    'processo', 'hora_inicio']
+                    'processo', 'hora_inicio', 'observacao']
     list_filter = ('setor', 'processo', 'tipo',)
 
 
