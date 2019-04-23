@@ -338,7 +338,10 @@ class RelatoriosViewSet(ModelViewSet):
         date_inicio = datetime.strptime(data_inicio, "%d/%m/%Y")
         date_fim = datetime.strptime(data_fim, "%d/%m/%Y")
 
-        print('Detalhes request > ' + processo + ' - ' + processo_id + ' - ' + data_inicio + ' - ' + data_fim)
+        try:
+            print('Detalhes request > ' + processo + ' - ' + processo_id + ' - ' + data_inicio + ' - ' + data_fim)
+        except Exception as e:
+            print(e.args[0])
 
         try:
             if processo:
