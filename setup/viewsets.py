@@ -338,7 +338,7 @@ class RelatoriosViewSet(ModelViewSet):
         date_inicio = datetime.strptime(data_inicio, "%d/%m/%Y")
         date_fim = datetime.strptime(data_fim, "%d/%m/%Y")
 
-        print(processo + ' - ' + processo_id + ' - ' + data_inicio + ' - ' + data_fim)
+        print('Detalhes request > ' + processo + ' - ' + processo_id + ' - ' + data_inicio + ' - ' + data_fim)
 
         try:
             if processo:
@@ -373,6 +373,7 @@ class RelatoriosViewSet(ModelViewSet):
                 }
                 return Response(data, status=status.HTTP_200_OK)
             else:
+
                 return Response('Processo não encontrado', status=status.HTTP_404_NOT_FOUND)
 
         except Exception as e:
