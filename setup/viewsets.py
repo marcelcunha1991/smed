@@ -335,11 +335,17 @@ class RelatoriosViewSet(ModelViewSet):
         data_inicio = request.data.get('data_inicio', None)
         data_fim = request.data.get('data_fim', None)
 
-        date_inicio = datetime.strptime(data_inicio, "%d/%m/%Y")
-        date_fim = datetime.strptime(data_fim, "%d/%m/%Y")
-        queryset = ''
         try:
-            print('Detalhes request > ' + processo + ' - ' + processo_id + ' - ' + data_inicio + ' - ' + data_fim)
+            date_inicio = datetime.strptime(data_inicio, "%d/%m/%Y")
+            date_fim = datetime.strptime(data_fim, "%d/%m/%Y")
+        except Exception as e:
+            print('Datas sem valor >>', e.args[0])
+
+        queryset = ''
+
+        try:
+            print('Detalhes request > ' + str(processo) + ' - ' + str(processo_id) + ' - ' + str(
+                data_inicio) + ' - ' + str(data_fim))
         except Exception as e:
             print('>>> ', e.args[0])
 
