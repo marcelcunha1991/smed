@@ -335,21 +335,17 @@ class RelatoriosViewSet(ModelViewSet):
         data_inicio = request.data.get('data_inicio', None)
         data_fim = request.data.get('data_fim', None)
 
-        try:
-            date_inicio = datetime.strptime(data_inicio, "%d/%m/%Y")
-            date_fim = datetime.strptime(data_fim, "%d/%m/%Y")
-        except Exception as e:
-            print('Datas sem valor >>', e.args[0])
-
         queryset = ''
 
         try:
             print('Detalhes request > ' + str(processo) + ' - ' + str(processo_id) + ' - ' + str(
                 data_inicio) + ' - ' + str(data_fim))
         except Exception as e:
-            print('>>> ', e.args[0])
+            print('dados request >>> ', e.args[0])
 
         try:
+            date_inicio = datetime.strptime(data_inicio, "%d/%m/%Y")
+            date_fim = datetime.strptime(data_fim, "%d/%m/%Y")
             if processo:
                 queryset = Procedimento.objects.filter(processo__descricao=processo)
 
@@ -382,9 +378,10 @@ class RelatoriosViewSet(ModelViewSet):
                 }
                 return Response(data, status=status.HTTP_200_OK)
             else:
-                print('queryset >> ', queryset)
-                return Response('Processo não encontrado', status=status.HTTP_404_NOT_FOUND)
+                msg = 'Dados informados não encontrados'
+                print(msg, 'queryset >> ', queryset)
+                return Response({'mensagem': msg}, status=status.HTTP_404_NOT_FOUND)
 
         except Exception as e:
             print('error > ', e.args[0])
-            return Response({'error': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'mensagem': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
