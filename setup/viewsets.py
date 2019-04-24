@@ -353,10 +353,9 @@ class RelatoriosViewSet(ModelViewSet):
                 queryset = Procedimento.objects.filter(processo__id=processo_id)
 
             if queryset:
-                try:
-                    queryset = queryset.filter(hora_inicio__range=(date_inicio, date_fim))
-                except Exception as e:
-                    return Response({'mensagem': 'Periodo não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+                queryset = queryset.filter(hora_inicio__range=(date_inicio, date_fim))
+
                 externo = []
                 interno = []
                 for procedimento in queryset:
@@ -364,20 +363,23 @@ class RelatoriosViewSet(ModelViewSet):
                         externo.append(procedimento)
                     else:
                         interno.append(procedimento)
+                if queryset:
 
-                filtro = {
-                    'procedimento': queryset[0].processo.descricao,
-                    'data_inicio': data_inicio,
-                    'data_fim': data_fim}
+                    filtro = {
+                        'procedimento': '',  # queryset[0].processo.descricao,
+                        'data_inicio': data_inicio,
+                        'data_fim': data_fim}
 
-                serializer_externo = RelatorioPeriodoSerializar(externo, many=True)
-                serializer_interno = RelatorioPeriodoSerializar(interno, many=True)
+                    serializer_externo = RelatorioPeriodoSerializar(externo, many=True)
+                    serializer_interno = RelatorioPeriodoSerializar(interno, many=True)
 
-                data = {
-                    'filtro': filtro,
-                    'setup_externo': serializer_externo.data,
-                    'setup_interno': serializer_interno.data
-                }
+                    data = {
+                        'filtro': filtro,
+                        'setup_externo': serializer_externo.data,
+                        'setup_interno': serializer_interno.data
+                    }
+                else:
+                    data = {'mensagem': 'Nenhum dado encontrado'}
                 return Response(data, status=status.HTTP_200_OK)
             else:
                 msg = 'Dados informados não encontrados'

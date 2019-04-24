@@ -29,7 +29,7 @@ class EtapaProcesso(models.Model):
     hora_inicio = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return '%s - %s %s ' % (self.op, self.descricao, self.etapa)
+        return '%s - %s - Etapa: %s ' % (self.op, self.descricao, self.etapa)
 
     class Meta:
         verbose_name = 'Etapa do Processo'
