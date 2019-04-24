@@ -353,8 +353,10 @@ class RelatoriosViewSet(ModelViewSet):
                 queryset = Procedimento.objects.filter(processo__id=processo_id)
 
             if queryset:
-                queryset = queryset.filter(hora_inicio__range=(date_inicio, date_fim))
-
+                try:
+                    queryset = queryset.filter(hora_inicio__range=(date_inicio, date_fim))
+                except Exception as e:
+                    return Response({'mensagem': 'Periodo não encontrado'}, status=status.HTTP_404_NOT_FOUND)
                 externo = []
                 interno = []
                 for procedimento in queryset:
