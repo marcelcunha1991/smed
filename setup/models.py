@@ -69,7 +69,8 @@ class Procedimento(models.Model):
     setor = models.ForeignKey(Cargo, on_delete=models.CASCADE, blank=True, null=True)
     predecessor = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
     operador = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Operador', on_delete=models.CASCADE,
-                                 blank=True, null=True)
+                                 blank=True, null=True)  # usuario logado no app
+    montador = models.CharField(max_length=50, blank=True, null=True)
     tempo_estimado = models.CharField(max_length=10, blank=True, null=True)
     tempo_estimado_ms = models.CharField(max_length=50, blank=True, null=True)
     tempo_realizado = models.CharField(max_length=10, blank=True, null=True)

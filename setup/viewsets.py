@@ -175,6 +175,7 @@ class ProcedimentoViewSet(ModelViewSet):
         procedimento = self.get_object()
 
         procedimento.hora_fim = request.data.get('hora_fim', None)
+        procedimento.montador = request.data.get('montador', None)
         procedimento.status = 3
 
         try:
@@ -202,6 +203,7 @@ class ProcedimentoViewSet(ModelViewSet):
         procedimento.hora_fim = request.data.get('hora_fim', None)
         procedimento.status = request.data.get('status', None)
         procedimento.observacao = request.data.get('observacao', None)
+        procedimento.montador = request.data.get('montador', None)
 
         try:
             if procedimento.status == '4':
