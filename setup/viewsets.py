@@ -34,7 +34,7 @@ class EtapaProcessoViewSet(ModelViewSet):
         maquina = self.request.data.get('maquina', None)
 
         try:
-            etapa = EtapaProcesso(etapa=data['etapa'], descricao=data['descricao'], status=data['status'])
+            etapa = EtapaProcesso(etapa=data['etapa'], descricao=data['descricao'])
             etapa.op = OrdemProcesso.objects.get(id=op)
             etapa.gerente = User.objects.get(id=gerente)
             etapa.maquina = Maquinas.objects.get(id=maquina)
@@ -89,7 +89,11 @@ class ProcedimentoViewSet(ModelViewSet):
         try:
             procedimento = Procedimento(ordem_roteiro=data['ordem_roteiro'], descricao=data['descricao'],
                                         tempo_estimado=data['tempo_estimado'], tipo=data['tipo'])
-            procedimento.setor = Cargo.objects.get(id=data['setor'])
+
+            setor_desc = data.get('setor', None)
+            setor = Cargo.objects.filter(descricao=setor_desc)
+            procedimento.setor = setor[0]  # Cargo.objects.get(id=data['setor'])
+
             predecessor = self.request.data.get('predecessor', None)
             if predecessor:
                 procedimento.predecessor = Procedimento.objects.get(id=predecessor)
@@ -100,6 +104,7 @@ class ProcedimentoViewSet(ModelViewSet):
             serializer = ProcedimentoShortSerializer(procedimento)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as e:
+            print(e.args[0])
             return Response({'message': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
