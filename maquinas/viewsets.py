@@ -12,14 +12,14 @@ class MaquinasViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         descricao = self.request.data.get('descricao', None)
-        tipo = self.request.data.get('tipo', None)
+        # tipo = self.request.data.get('tipo', None)
         statusS = self.request.data.get('status', None)
 
         try:
-            tipo = Tipo.objects.get(id=tipo)
+            # tipo = Tipo.objects.get(id=tipo)
             maquina = Maquinas.objects.create(
                 descricao=descricao,
-                tipo=tipo,
+                # tipo=tipo,
                 status=statusS)
             serializer = MaquinasSerializer(maquina)
             return Response(serializer.data)
