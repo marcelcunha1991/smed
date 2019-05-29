@@ -46,7 +46,7 @@ class EtapaProcessoViewSet(ModelViewSet):
     def update(self, request, *args, **kwargs):
         etapa = self.get_object()
         etapa.status = request.data.get('status', etapa.status)
-        etapa.descricao = request.data.get('status', etapa.descricao)
+        etapa.descricao = request.data.get('descricao', etapa.descricao)
         etapa.etapa = request.data.get('etapa', etapa.etapa)
         try:
             gerente = request.data.get('gerente', None)
