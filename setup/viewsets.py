@@ -66,6 +66,12 @@ class EtapaProcessoViewSet(ModelViewSet):
         serializer = EtapaProcessoSerializer(queryset, many=True)
         return Response(serializer.data)
 
+    @action(methods=['get'], detail=False)
+    def etapa_ativos(self, request):
+        etapas = EtapaProcesso.objects.filter(status=1)
+        serializer = EtapaProcessoSerializer(etapas, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class ProcedimentoViewSet(ModelViewSet):
     serializer_class = ProcedimentoShortSerializer
