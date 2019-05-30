@@ -358,7 +358,7 @@ class RelatoriosViewSet(ModelViewSet):
             print('dados request >>> ', e.args[0])
 
         try:
-            data_inicio = data_inicio + ' 23:59:59'
+            data_inicio = data_inicio + ' 00:00:00'
             data_fim = data_fim + ' 23:59:59'
 
             date_inicio = datetime.strptime(data_inicio, "%d/%m/%Y %H:%M:%S")
