@@ -276,7 +276,9 @@ class ProcedimentoViewSet(ModelViewSet):
         setor = self.request.query_params.get('setor', None)
 
         try:
-            procedimento = Procedimento.objects.values(
+            procedimento = Procedimento.objects.filter(status=1) | Procedimento.objects.filter(status=2)
+
+            procedimento = procedimento.values(
                 'processo__id',
                 'processo__descricao',
                 'processo__maquina__descricao',
@@ -285,8 +287,7 @@ class ProcedimentoViewSet(ModelViewSet):
                 'processo__hora_inicio',
                 'processo__gerente__name',
             ).annotate(qtde_atividades=Count('setor')).filter(
-                setor=setor,
-                status=1
+                setor=setor
             )
             if op:
                 procedimento = procedimento.filter(processo__op=op)
