@@ -358,8 +358,11 @@ class RelatoriosViewSet(ModelViewSet):
             print('dados request >>> ', e.args[0])
 
         try:
-            date_inicio = datetime.strptime(data_inicio, "%d/%m/%Y")
-            date_fim = datetime.strptime(data_fim, "%d/%m/%Y")
+            data_inicio = data_inicio + ' 23:59:59'
+            data_fim = data_fim + ' 23:59:59'
+
+            date_inicio = datetime.strptime(data_inicio, "%d/%m/%Y %H:%M:%S")
+            date_fim = datetime.strptime(data_fim, "%d/%m/%Y %H:%M:%S")
             if processo:
                 queryset = Procedimento.objects.filter(processo__descricao=processo)
 
