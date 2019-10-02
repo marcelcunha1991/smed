@@ -352,12 +352,6 @@ class RelatoriosViewSet(ModelViewSet):
         queryset = ''
 
         try:
-            print('Detalhes request > ' + str(processo) + ' - ' + str(processo_id) + ' - ' + str(
-                data_inicio) + ' - ' + str(data_fim))
-        except Exception as e:
-            print('dados request >>> ', e.args[0])
-
-        try:
             data_inicio = data_inicio + ' 00:00:00'
             data_fim = data_fim + ' 23:59:59'
 
