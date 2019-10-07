@@ -14,7 +14,7 @@ from setup.serializers import (
     # SetupSerializer,
     OrdemProcessoSerializer,
     ProcedimentoShortSerializer, ProcedimentoDetailsSerializer, ProcedimentoStatusSerializer,
-    RelatorioPeriodoSerializar, RelatorioFilterSerializer)
+    RelatorioPeriodoSerializar)
 
 
 class OrdemProcessoViewSet(ModelViewSet):
@@ -320,6 +320,31 @@ class ProcedimentoViewSet(ModelViewSet):
 
         except Exception as e:
             return Response({'menssage': e.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(methods=['post'], detail=False)
+    def reutilizar_setup(self, request):
+        etapa_id = request.data.get('etapa_id', None)
+
+        procedimentos = Procedimento.objects.filter(processo__id=int(etapa_id))
+        etapa = procedimentos[0].processo
+
+        obj_etapa = EtapaProcesso.objects.create(
+            op=etapa.op, maquina=etapa.maquina,
+            descricao=etapa.descricao
+        )
+        query_list = list()
+        for pro in procedimentos:
+            obj = Procedimento.objects.create(
+                ordem_roteiro=pro.ordem_roteiro, descricao=pro.descricao,
+                setor=pro.setor, tempo_estimado=pro.tempo_estimado,
+                tempo_estimado_ms=pro.tempo_estimado_ms, status=1,
+                processo=obj_etapa, tipo=pro.tipo
+            )
+            query_list.append(obj)
+
+        serializer = ProcedimentoShortSerializer(query_list, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        # return Response(status=status.HTTP_200_OK)
 
     def convert_date_ms(self, date_string):
 

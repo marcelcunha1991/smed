@@ -23,7 +23,7 @@ class EtapaProcesso(models.Model):
     etapa = models.IntegerField(blank=True, null=True)
     maquina = models.ForeignKey(Maquinas, on_delete=models.CASCADE, blank=True, null=True)
     descricao = models.CharField(max_length=100, blank=True, null=True)
-    gerente = models.ForeignKey(User, verbose_name='Gerente', on_delete=models.CASCADE)
+    gerente = models.ForeignKey(User, verbose_name='Gerente', on_delete=models.CASCADE, blank=True, null=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=1, blank=True, null=True)
     codigo = models.CharField(max_length=100, blank=True, null=True)
     hora_inicio = models.DateTimeField(blank=True, null=True)
