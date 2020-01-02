@@ -21,6 +21,7 @@ class EtapaProcesso(models.Model):
     )
     op = models.ForeignKey(OrdemProcesso, on_delete=models.PROTECT)
     etapa = models.IntegerField(blank=True, null=True)
+    nivel = models.IntegerField(blank=True, null=True)
     maquina = models.ForeignKey(Maquinas, on_delete=models.CASCADE, blank=True, null=True)
     descricao = models.CharField(max_length=100, blank=True, null=True)
     gerente = models.ForeignKey(User, verbose_name='Gerente', on_delete=models.CASCADE, blank=True, null=True)

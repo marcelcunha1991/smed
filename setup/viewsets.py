@@ -32,12 +32,14 @@ class EtapaProcessoViewSet(ModelViewSet):
         op = self.request.data.get('op', None)
         gerente = self.request.data.get('gerente', None)
         maquina = self.request.data.get('maquina', None)
+        nivel = self.request.data.get('nivel', None)
 
         try:
-            etapa = EtapaProcesso(etapa=data['etapa'], descricao=data['descricao'])
+            etapa = EtapaProcesso(etapa=data['etapa'], descricao=data['descricao'], nivel=data['nivel'])
             etapa.op = OrdemProcesso.objects.get(id=op)
             etapa.gerente = User.objects.get(id=gerente)
             etapa.maquina = Maquinas.objects.get(id=maquina)
+
             etapa.save()
             return Response(status=status.HTTP_201_CREATED)
         except Exception as e:
@@ -48,9 +50,11 @@ class EtapaProcessoViewSet(ModelViewSet):
         etapa.status = request.data.get('status', etapa.status)
         etapa.descricao = request.data.get('descricao', etapa.descricao)
         etapa.etapa = request.data.get('etapa', etapa.etapa)
+        etapa.nivel = request.data.get('nivel', etapa.nivel)
         try:
             gerente = request.data.get('gerente', None)
             maquina = request.data.get('maquina', None)
+            etapa = request.data.get('nivel', None)
             etapa.gerente = User.objects.get(id=gerente)
             etapa.maquina = Maquinas.objects.get(id=maquina)
             etapa.save()
