@@ -21,7 +21,7 @@ class EtapaProcessoSerializer(ModelSerializer):
         model = EtapaProcesso
         fields = (
             'id', 'op', 'op_descricao', 'etapa', 'gerente', 'gerente_name',
-            'maquina', 'maquina_descricao', 'descricao', 'status'
+            'maquina', 'maquina_descricao', 'descricao', 'status','nivel'
         )
 
     def get_status(self, obj):

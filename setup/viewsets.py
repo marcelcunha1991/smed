@@ -33,12 +33,13 @@ class EtapaProcessoViewSet(ModelViewSet):
         gerente = self.request.data.get('gerente', None)
         maquina = self.request.data.get('maquina', None)
         nivel = self.request.data.get('nivel', None)
-
+        print("nivel: ", nivel)
         try:
             etapa = EtapaProcesso(etapa=data['etapa'], descricao=data['descricao'], nivel=data['nivel'])
             etapa.op = OrdemProcesso.objects.get(id=op)
             etapa.gerente = User.objects.get(id=gerente)
             etapa.maquina = Maquinas.objects.get(id=maquina)
+
 
             etapa.save()
             return Response(status=status.HTTP_201_CREATED)
