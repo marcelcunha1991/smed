@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
-
+from rest_framework import serializers
 from accounts.serializers import UserLoggedSerializer
-from setup.models import EtapaProcesso, Procedimento, OrdemProcesso
+from setup.models import EtapaProcesso, Procedimento, OrdemProcesso, Niveis, ProcedimentoPadrao
 from datetime import date, datetime, timedelta, time
 
 
@@ -21,12 +21,16 @@ class EtapaProcessoSerializer(ModelSerializer):
         model = EtapaProcesso
         fields = (
             'id', 'op', 'op_descricao', 'etapa', 'gerente', 'gerente_name',
-            'maquina', 'maquina_descricao', 'descricao', 'status','nivel'
+            'maquina', 'maquina_descricao', 'descricao', 'status','linha','nivel'
         )
 
     def get_status(self, obj):
         return obj.get_status_display()
 
+class ProcedimentoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Procedimento
+        fields = "__all__"
 
 #  Mostra os campos necessários quando for listar uma coleção de procedimentos
 class ProcedimentoShortSerializer(ModelSerializer):
@@ -47,6 +51,12 @@ class ProcedimentoShortSerializer(ModelSerializer):
 
     def get_tipo(self, obj):
         return obj.get_tipo_display()
+
+
+class ProcedimentoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Procedimento
+        fields = "__all__"
 
 
 class ProcedimentoDetailsSerializer(ModelSerializer):
@@ -117,3 +127,16 @@ class RelatorioFilterSerializer(ModelSerializer):
     class Meta:
         model = Procedimento
         fields = ('processo', 'processo_descricao', 'hora_inicio', 'hora_fim')
+
+
+class NivelSerializer(ModelSerializer):
+    class Meta:
+        model = Niveis
+        fields = "__all__"
+
+
+class ProcedimentoPadraoSerializer(ModelSerializer):
+    class Meta:
+        model = ProcedimentoPadrao
+        fields = "__all__"
+        depth=1

@@ -28,6 +28,8 @@ class EtapaProcesso(models.Model):
     status = models.IntegerField(choices=STATUS_CHOICES, default=1, blank=True, null=True)
     codigo = models.CharField(max_length=100, blank=True, null=True)
     hora_inicio = models.DateTimeField(blank=True, null=True)
+    opc = models.CharField(max_length=20,null=True)
+    linha = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return '%s - %s - Etapa: %s ' % (self.op, self.descricao, self.etapa)
@@ -65,8 +67,7 @@ class Procedimento(models.Model):
     )
 
     ordem_roteiro = models.IntegerField(blank=True, null=True)
-    descricao = models.CharField(max_length=45, blank=True, null=True)
-    # setup = models.ForeignKey(Setup, on_delete=models.CASCADE)
+    descricao = models.CharField(max_length=90, blank=True, null=True)
     setor = models.ForeignKey(Cargo, on_delete=models.CASCADE, blank=True, null=True)
     predecessor = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
     operador = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Operador', on_delete=models.CASCADE,
@@ -78,7 +79,7 @@ class Procedimento(models.Model):
     tempo_realizado_ms = models.CharField(max_length=50, blank=True, null=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=1, blank=True, null=True)
     observacao = models.TextField(max_length=100, blank=True, null=True)
-    processo = models.ForeignKey(EtapaProcesso, verbose_name='Etapa', on_delete=models.CASCADE, blank=True, null=True)
+    processo = models.ForeignKey(EtapaProcesso, verbose_name='Etapa', on_delete=models.PROTECT, blank=True, null=True)
     tipo = models.IntegerField(choices=TIPO_CHOICES, null=True, blank=True)
     hora_inicio = models.DateTimeField(blank=True, null=True)
     hora_fim = models.DateTimeField(blank=True, null=True)
@@ -112,3 +113,30 @@ class Procedimento(models.Model):
     @property
     def op(self):
         return '%s' % str(self.processo.op.descricao)
+
+
+class Niveis(models.Model):
+    descricao = models.CharField(max_length=50, blank=True, null=True)
+    status = models.BooleanField(default=True)
+
+class ProcedimentoPadrao(models.Model):
+    TIPO_CHOICES = (
+        (1, 'Externo'),
+        (2, 'Interno'),
+    )
+
+    nivel = models.ForeignKey(Niveis,on_delete=models.CASCADE,null=True)
+    ordem_roteiro = models.IntegerField(blank=True, null=True)
+    descricao = models.CharField(max_length=45, blank=True, null=True)
+    setor = models.ForeignKey(Cargo, on_delete=models.CASCADE, blank=True, null=True)
+    operador = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='colaborador', on_delete=models.CASCADE,
+                                 blank=True, null=True)  # usuario logado no app
+    tipo = models.IntegerField(choices=TIPO_CHOICES, null=True, blank=True)
+    tempo_estimado = models.CharField(max_length=10, blank=True, null=True)
+    tempo_estimado_ms = models.CharField(max_length=50, blank=True, null=True)
+
+
+
+
+
+

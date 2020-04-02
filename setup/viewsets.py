@@ -1,20 +1,23 @@
+import sqlite3
 from datetime import datetime, timedelta
 
 from django.db.models import Count
+from django.db.models.query_utils import Q
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from accounts.models import User, Cargo
 from maquinas.models import Maquinas
-from setup.models import EtapaProcesso, Procedimento, OrdemProcesso
+from setup.models import EtapaProcesso, Procedimento, OrdemProcesso, ProcedimentoPadrao
 from setup.serializers import (
     EtapaProcessoSerializer,
     # SetupSerializer,
     OrdemProcessoSerializer,
     ProcedimentoShortSerializer, ProcedimentoDetailsSerializer, ProcedimentoStatusSerializer,
-    RelatorioPeriodoSerializar)
+    RelatorioPeriodoSerializar, ProcedimentoSerializer)
 
 
 class OrdemProcessoViewSet(ModelViewSet):
@@ -33,18 +36,46 @@ class EtapaProcessoViewSet(ModelViewSet):
         gerente = self.request.data.get('gerente', None)
         maquina = self.request.data.get('maquina', None)
         nivel = self.request.data.get('nivel', None)
-        print("nivel: ", nivel)
+
         try:
-            etapa = EtapaProcesso(etapa=data['etapa'], descricao=data['descricao'], nivel=data['nivel'])
+            etapa = EtapaProcesso(etapa=data['etapa'], descricao=data['descricao'], nivel=data['nivel'], linha=data['linha'])
+
             etapa.op = OrdemProcesso.objects.get(id=op)
             etapa.gerente = User.objects.get(id=gerente)
             etapa.maquina = Maquinas.objects.get(id=maquina)
 
-
             etapa.save()
+
+            procedimentoPadrao = ProcedimentoPadrao.objects.filter(nivel=nivel)
+
+            for padrao in procedimentoPadrao:
+
+                procedimento = Procedimento(ordem_roteiro=padrao.ordem_roteiro, descricao=padrao.descricao,
+                                            tempo_estimado=padrao.tempo_estimado, tipo=padrao.tipo)
+
+                procedimento.setor = padrao.setor
+                procedimento.operador = padrao.operador
+                procedimento.tempo_estimado_ms = self.convert_date_ms(padrao.tempo_estimado)
+                procedimento.processo = EtapaProcesso.objects.get(id=etapa.id)
+
+                procedimento.save()
+
             return Response(status=status.HTTP_201_CREATED)
         except Exception as e:
-            return Response({'message': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+            print (e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+    def convert_date_ms(self, date_string):
+
+          date_time = datetime.strptime(date_string, '%H:%M:%S').time()
+
+          t_hora_str = int(date_time.strftime('%H'))
+          t_min_str = int(date_time.strftime('%M'))
+          t_seg_str = int(date_time.strftime('%S'))
+
+          total_ms = timedelta(hours=t_hora_str, minutes=t_min_str, seconds=t_seg_str).seconds * 1000
+          return total_ms
 
     def update(self, request, *args, **kwargs):
         etapa = self.get_object()
@@ -78,6 +109,25 @@ class EtapaProcessoViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+
+class CriarProcedimento(APIView):
+
+    def post(self, request, format=None):
+        print (request.data)
+
+        file_serializer = ProcedimentoSerializer(data=request.data)
+
+        if file_serializer.is_valid():
+
+            objeto = file_serializer.save()
+
+            porque_serializer = ProcedimentoSerializer(objeto)
+
+            return Response(porque_serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class ProcedimentoViewSet(ModelViewSet):
     serializer_class = ProcedimentoShortSerializer
 
@@ -97,37 +147,51 @@ class ProcedimentoViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = request.data
+        print (data)
         try:
             procedimento = Procedimento(ordem_roteiro=data['ordem_roteiro'], descricao=data['descricao'],
                                         tempo_estimado=data['tempo_estimado'], tipo=data['tipo'])
 
-            setor_desc = data.get('setor', None)
-            setor = Cargo.objects.filter(descricao=setor_desc)
-            procedimento.setor = setor[0]  # Cargo.objects.get(id=data['setor'])
+            operador = User.objects.get(id=data['operador'])
+            procedimento.operador = operador
+            # setor_desc = data.get('setor', None)
+            # procedimento.setor = setor[0]  # Cargo.objects.get(id=data['setor'])
+
+            # procedimento.setor = Cargo.objects.filter(descricao=data['setor'])
 
             predecessor = self.request.data.get('predecessor', None)
+
             if predecessor:
                 procedimento.predecessor = Procedimento.objects.get(id=predecessor)
 
             procedimento.processo = EtapaProcesso.objects.get(id=data['processo'])
             procedimento.tempo_estimado_ms = self.convert_date_ms(procedimento.tempo_estimado)
-            procedimento.save()
+
+            try:
+                procedimento.save()
+            except Exception as e:
+                print (e)
+            print("Procedimento salvo")
             serializer = ProcedimentoShortSerializer(procedimento)
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as e:
             print(e.args[0])
             return Response({'message': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
+        print("Retrieve")
         procedimento = self.get_object()
         serializer = ProcedimentoDetailsSerializer(procedimento)
         return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
+        print("Update")
         return super(ProcedimentoViewSet, self).update(request, *args, **kwargs)
 
     # Usar o metodo HTTP PATCH no front-end
     def partial_update(self, request, *args, **kwargs):
+        print("Parcial Update")
         procedimento = self.get_object()
 
         # TODO Nesse trecho podem ser colocados os campos a serem atualizados quando for necessário
@@ -287,6 +351,7 @@ class ProcedimentoViewSet(ModelViewSet):
         setor = self.request.query_params.get('setor', None)
 
         try:
+            operador = User.objects.get(id=setor)
             procedimento = Procedimento.objects.filter(status=1) | Procedimento.objects.filter(status=2)
 
             procedimento = procedimento.values(
@@ -298,7 +363,7 @@ class ProcedimentoViewSet(ModelViewSet):
                 'processo__hora_inicio',
                 'processo__gerente__name',
             ).annotate(qtde_atividades=Count('setor')).filter(
-                setor=setor
+                operador=operador
             )
             if op:
                 procedimento = procedimento.filter(processo__op=op)
@@ -308,7 +373,7 @@ class ProcedimentoViewSet(ModelViewSet):
 
             return Response({'etapa_processo': procedimento}, status=status.HTTP_200_OK)
         except Exception as e:
-            mensagem = {'error': e.args[0]}
+            mensagem = {'error': e}
             return Response(mensagem, status=404)
 
     @action(methods=['get'], detail=False)
@@ -316,7 +381,9 @@ class ProcedimentoViewSet(ModelViewSet):
         user = self.request.query_params.get('operador', None)
 
         try:
-            procedimento = Procedimento.objects.filter(operador=user, status=2)
+            criterion1 = Q(status=1)
+            criterion2 = Q(status=2)
+            procedimento = Procedimento.objects.filter(operador=user)
             if not procedimento:  # Verifica se a lista for zero, vazio ou false
                 return Response({'menssage': 'Empty List'}, status=status.HTTP_404_NOT_FOUND)
 

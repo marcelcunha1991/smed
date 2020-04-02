@@ -22,7 +22,10 @@ from rest_framework import routers
 
 from accounts.viewsets import UserViewSet, CargoViewSet, LoginViewSet, LogoutViewSet, index
 from maquinas.viewsets import MaquinasViewSet, TipoViewSet
-from setup.viewsets import OrdemProcessoViewSet, EtapaProcessoViewSet, ProcedimentoViewSet, RelatoriosViewSet
+from setup.niveisViewset import CriarNivel, DetalheNiveis, RemoveNivel, AlteraNivel
+from setup.procedimentoPadraoViewset import CriarProcedimentoPadrao, DetalheProcedimentoPadrao, \
+    RemoveProcedimentoPadrao, AlteraProcedimentoPadrao
+from setup.viewsets import OrdemProcessoViewSet, EtapaProcessoViewSet, ProcedimentoViewSet, RelatoriosViewSet, CriarProcedimento
 
 router = routers.DefaultRouter()
 router.register(r'user', UserViewSet, base_name='User')
@@ -38,6 +41,18 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('user/login/', LoginViewSet.as_view()),
     path('user/logout/', LogoutViewSet.as_view()),
+    path('procedimento/criar/', CriarProcedimento.as_view()),
+
+    path('niveis/criar/', CriarNivel.as_view()),
+    path('niveis/detalhe/', DetalheNiveis.as_view()),
+    path('niveis/remover/', RemoveNivel.as_view()),
+    path('niveis/alterar/', AlteraNivel.as_view()),
+
+    path('procedimentoPadrao/criar/', CriarProcedimentoPadrao.as_view()),
+    path('procedimentoPadrao/detalhe/', DetalheProcedimentoPadrao.as_view()),
+    path('procedimentoPadrao/remover/', RemoveProcedimentoPadrao.as_view()),
+    path('procedimentoPadrao/alterar/', AlteraProcedimentoPadrao.as_view()),
+
     path('', index),
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
