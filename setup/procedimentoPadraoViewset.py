@@ -62,13 +62,11 @@ class DetalheProcedimentoPadrao(APIView):
 
 class RemoveProcedimentoPadrao(APIView):
 
-    def post(self, request, format=None):
-
-        nivel_id = request.POST.get("id")
+    def delete(self, request, padrao_id):
 
         try:
-            if nivel_id is not None:
-                ProcedimentoPadrao.objects.filter(id=nivel_id).delete()
+            if padrao_id is not None:
+                ProcedimentoPadrao.objects.filter(id=padrao_id).delete()
             else:
                 ProcedimentoPadrao.objects.all().delete()
             return Response(status=status.HTTP_200_OK)

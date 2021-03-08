@@ -15,11 +15,12 @@ Including another URLconf
 """
 from django.conf import settings
 from django.contrib import admin
-from django.conf.urls import include
+from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.urls import path
 from rest_framework import routers
 
+from accounts.models import Cargo, User
 from accounts.viewsets import UserViewSet, CargoViewSet, LoginViewSet, LogoutViewSet, index
 from maquinas.viewsets import MaquinasViewSet, TipoViewSet
 from setup.niveisViewset import CriarNivel, DetalheNiveis, RemoveNivel, AlteraNivel
@@ -45,17 +46,19 @@ urlpatterns = [
 
     path('niveis/criar/', CriarNivel.as_view()),
     path('niveis/detalhe/', DetalheNiveis.as_view()),
-    path('niveis/remover/', RemoveNivel.as_view()),
+    url(r'^niveis/remover/(?P<nivel_id>[\w-]+)/$', RemoveNivel.as_view()),
     path('niveis/alterar/', AlteraNivel.as_view()),
 
     path('procedimentoPadrao/criar/', CriarProcedimentoPadrao.as_view()),
     path('procedimentoPadrao/detalhe/', DetalheProcedimentoPadrao.as_view()),
-    path('procedimentoPadrao/remover/', RemoveProcedimentoPadrao.as_view()),
+    url(r'^procedimentoPadrao/remover/(?P<padrao_id>[\w-]+)/$', RemoveProcedimentoPadrao.as_view()),
     path('procedimentoPadrao/alterar/', AlteraProcedimentoPadrao.as_view()),
 
     path('', index),
     path('admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
 
 # if settings.DEBUG:
 #     import debug_toolbar
