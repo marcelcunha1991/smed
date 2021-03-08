@@ -505,3 +505,4 @@ class RelatoriosViewSet(ModelViewSet):
         except Exception as e:
             print('error > ', e.args[0])
             return Response({'mensagem': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+

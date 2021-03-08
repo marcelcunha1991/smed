@@ -36,6 +36,7 @@ class UserViewSet(ModelViewSet):
             user.save()
             serializer = UserLoggedSerializer(user)
             return Response(serializer.data)
+
         except Exception as e:
             return Response({'mensage': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
 

@@ -1,0 +1,9 @@
+[
+  {
+    "model": "smedserver.cargo",
+    "pk": 1,
+    "fields": {
+      "descricao": "admin"
+    }
+  }
+]

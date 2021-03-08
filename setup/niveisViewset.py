@@ -51,9 +51,7 @@ class DetalheNiveis(APIView):
 
 class RemoveNivel(APIView):
 
-    def post(self, request, format=None):
-
-        nivel_id = request.POST.get("id")
+    def delete(self, request, nivel_id):
 
         try:
             if nivel_id is not None:
