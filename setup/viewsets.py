@@ -38,7 +38,13 @@ class EtapaProcessoViewSet(ModelViewSet):
         nivel = self.request.data.get('nivel', None)
 
         try:
-            etapa = EtapaProcesso(etapa=data['etapa'], descricao=data['descricao'], nivel=data['nivel'], linha=data['linha'])
+            etapa = EtapaProcesso(etapa=data['etapa'],
+                                  descricao=data['descricao'],
+                                  nivel=data['nivel'],
+                                  linha=data['linha'],
+                                  hora_programada =  data['hora_programada'],
+                                  quantidadeKit = data['quantidadeKit']
+                                  )
 
             etapa.op = OrdemProcesso.objects.get(id=op)
             etapa.gerente = User.objects.get(id=gerente)
@@ -147,10 +153,12 @@ class ProcedimentoViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = request.data
-        print (data)
+
         try:
-            procedimento = Procedimento(ordem_roteiro=data['ordem_roteiro'], descricao=data['descricao'],
-                                        tempo_estimado=data['tempo_estimado'], tipo=data['tipo'])
+            procedimento = Procedimento(ordem_roteiro=data['ordem_roteiro'],
+                                        descricao=data['descricao'],
+                                        tempo_estimado=data['tempo_estimado'],
+                                        tipo=data['tipo'])
 
             operador = User.objects.get(id=data['operador'])
             procedimento.operador = operador
@@ -176,8 +184,8 @@ class ProcedimentoViewSet(ModelViewSet):
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as e:
-            print(e.args[0])
-            return Response({'message': e.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+            print(e)
+            return Response({'message': e}, status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, *args, **kwargs):
         print("Retrieve")
