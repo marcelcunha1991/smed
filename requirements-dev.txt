@@ -24,7 +24,7 @@ numba==0.48.0
 numpy==1.18.2
 opencv-contrib-python==4.2.0.32
 opencv-python==3.4.3.18
-Pillow==5.4.1
+Pillow==7.1.0
 psycopg2==2.8.2
 pycparser==2.19
 pydot==1.4.1
