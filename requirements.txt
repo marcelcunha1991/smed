@@ -41,6 +41,6 @@ sqlparse==0.2.4
 static3==0.7.0
 typing==3.6.6
 typing-extensions==3.10.0.2
-urllib3==1.25.8
+urllib3==1.26.5
 vine==1.2.0
 whitenoise==4.1.2
