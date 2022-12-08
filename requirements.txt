@@ -1,7 +1,7 @@
 amqp==2.4.1
 asgiref==3.2.3
 billiard==3.5.0.5
-certifi==2019.6.16
+certifi==2022.12.7
 dataclasses==0.6
 dj-database-url==0.5.0
 dj-static==0.0.6
